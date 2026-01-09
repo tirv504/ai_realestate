@@ -1,0 +1,10 @@
+*.zip
+*.csv
+*.xlsx
+*.txt
+*.iso
+__pycache__/
+.env
+.venv
+.idea/
+.vscode/
