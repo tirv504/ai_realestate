@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LTI Property Advisors | Get a Cash Offer on Your Home</title>
+  <meta name="description" content="Get a fair, no-obligation cash offer on your property from LTI Property Advisors. Fast, simple, no repairs needed." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:     #0d1b3e;
+      --navy-mid: #162550;
+      --gold:     #c8952a;
+      --gold-h:   #e0a730;
+      --white:    #ffffff;
+      --gray-50:  #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --radius:   10px;
+      --shadow:   0 4px 24px rgba(0,0,0,.10);
+      --shadow-lg:0 8px 40px rgba(0,0,0,.18);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--gray-800);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ────────────────────────────────── */
+    nav {
+      background: var(--navy);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.25);
+    }
+    .nav-logo {
+      color: var(--white);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -.01em;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,.72);
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    /* ── HERO ───────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #1c3266 100%);
+      padding: 72px 32px 80px;
+    }
+    .hero-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 430px;
+      gap: 60px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(200,149,42,.18);
+      color: var(--gold-h);
+      border: 1px solid rgba(200,149,42,.4);
+      border-radius: 100px;
+      padding: 5px 16px;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      color: var(--white);
+      font-size: clamp(1.9rem, 3.8vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.025em;
+      margin-bottom: 20px;
+    }
+    .hero h1 em { font-style: normal; color: var(--gold); }
+    .hero-sub {
+      color: rgba(255,255,255,.76);
+      font-size: 1.05rem;
+      margin-bottom: 36px;
+      max-width: 440px;
+    }
+    .hero-bullets { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+    .hero-bullets li {
+      color: rgba(255,255,255,.85);
+      font-size: .94rem;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+    .hero-bullets li::before {
+      content: '';
+      display: inline-flex;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      background: var(--gold);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23fff'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+      background-size: 12px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    /* ── FORM CARD ──────────────────────────── */
+    .form-card {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 36px 32px;
+      box-shadow: var(--shadow-lg);
+    }
+    .form-card h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 3px;
+    }
+    .form-sub {
+      font-size: .85rem;
+      color: var(--gray-500);
+      margin-bottom: 24px;
+    }
+    .form-group { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: .95rem;
+      color: var(--gray-800);
+      background: var(--white);
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(13,27,62,.1);
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      margin-top: 6px;
+      letter-spacing: .01em;
+    }
+    .btn-submit:hover { background: var(--gold-h); }
+    .btn-submit:active { transform: scale(.99); }
+
+    /* ── SMS CONSENT ────────────────────────── */
+    .sms-consent {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      font-size: .7rem;
+      color: var(--gray-500);
+      line-height: 1.65;
+    }
+    .sms-consent a { color: var(--navy); text-decoration: underline; }
+
+    /* ── SUCCESS ────────────────────────────── */
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 20px 10px 10px;
+    }
+    .success-msg .check { font-size: 3rem; margin-bottom: 14px; }
+    .success-msg h3 { color: var(--navy); font-size: 1.15rem; margin-bottom: 8px; }
+    .success-msg p  { color: var(--gray-500); font-size: .88rem; line-height: 1.6; }
+
+    /* ── HOW IT WORKS ───────────────────────── */
+    .how {
+      padding: 80px 32px;
+      background: var(--gray-50);
+    }
+    .section-label {
+      text-align: center;
+      font-size: .74rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.5rem, 2.8vw, 2rem);
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -.02em;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--gray-500);
+      font-size: .95rem;
+      max-width: 440px;
+      margin: 0 auto 52px;
+    }
+    .steps {
+      max-width: 880px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .step {
+      text-align: center;
+      padding: 36px 24px;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    .step-num {
+      width: 54px;
+      height: 54px;
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 1.35rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+    }
+    .step h3 { font-size: .95rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .step p  { font-size: .85rem; color: var(--gray-500); line-height: 1.65; }
+
+    /* ── LEGAL ──────────────────────────────── */
+    .legal {
+      padding: 72px 32px;
+      background: var(--white);
+    }
+    .legal-inner { max-width: 820px; margin: 0 auto; }
+    .legal .section-label,
+    .legal .section-title { text-align: left; }
+    .legal .section-title { margin-bottom: 28px; }
+
+    .accordion {
+      border: 1.5px solid var(--gray-300);
+      border-radius: 12px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .accordion-header {
+      width: 100%;
+      background: var(--gray-50);
+      border: none;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-align: left;
+      transition: background .2s;
+    }
+    .accordion-header:hover { background: var(--gray-100); }
+    .accordion-icon {
+      font-size: 1.4rem;
+      font-weight: 300;
+      color: var(--gray-500);
+      transition: transform .25s;
+      line-height: 1;
+    }
+    .accordion.open .accordion-icon { transform: rotate(45deg); }
+    .accordion-body {
+      display: none;
+      padding: 28px 28px 24px;
+      font-size: .875rem;
+      color: var(--gray-700);
+      line-height: 1.8;
+      border-top: 1.5px solid var(--gray-300);
+    }
+    .accordion.open .accordion-body { display: block; }
+    .accordion-body h3 {
+      font-size: .875rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 22px 0 6px;
+    }
+    .accordion-body h3:first-child { margin-top: 0; }
+    .accordion-body p   { margin-bottom: 10px; }
+    .accordion-body ul  { padding-left: 22px; margin-bottom: 12px; }
+    .accordion-body li  { margin-bottom: 5px; }
+    .accordion-body strong { color: var(--gray-800); }
+
+    /* ── FOOTER ─────────────────────────────── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.6);
+      padding: 40px 32px;
+      text-align: center;
+      font-size: .82rem;
+      line-height: 1.8;
+    }
+    footer strong { color: var(--white); }
+    footer a { color: rgba(255,255,255,.6); text-decoration: underline; }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      margin: 10px 0 4px;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────── */
+    @media (max-width: 800px) {
+      nav { padding: 14px 18px; }
+      .nav-links { display: none; }
+
+      .hero { padding: 48px 20px 56px; }
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+      .hero h1 { font-size: 1.85rem; }
+      .form-card { padding: 28px 22px; }
+
+      .how { padding: 56px 20px; }
+      .steps { grid-template-columns: 1fr; max-width: 380px; gap: 18px; }
+
+      .legal { padding: 52px 20px; }
+      .accordion-body { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ───────────────────────────────────── -->
+  <nav>
+    <div class="nav-logo">LTI <span>Property Advisors</span></div>
+    <ul class="nav-links">
+      <li><a href="#offer">Get an Offer</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#privacy-section">Privacy</a></li>
+      <li><a href="#terms-section">Terms</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── HERO + FORM ───────────────────────────── -->
+  <section class="hero" id="offer">
+    <div class="hero-inner">
+
+      <div class="hero-copy">
+        <div class="hero-badge">Houston Real Estate Advisors</div>
+        <h1>Get a <em>Fair Cash Offer</em><br>on Your Property</h1>
+        <p class="hero-sub">
+          Tell us about your property and we'll be in touch with a
+          no-obligation offer. Fast, simple, and on your timeline.
+        </p>
+        <ul class="hero-bullets">
+          <li>No repairs or renovations required</li>
+          <li>No agent commissions or hidden fees</li>
+          <li>No showings or open houses</li>
+          <li>Close in as little as 7 days</li>
+        </ul>
+      </div>
+
+      <div class="form-card" id="form-card">
+        <h2>Request Your Cash Offer</h2>
+        <p class="form-sub">Free &nbsp;·&nbsp; No obligation &nbsp;·&nbsp; Takes 60 seconds</p>
+
+        <form id="inquiry-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name"
+                   placeholder="Jane Smith" required />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone"
+                   placeholder="(713) 555-0100" required />
+          </div>
+          <div class="form-group">
+            <label for="address">Property Address</label>
+            <input type="text" id="address" name="address"
+                   placeholder="123 Main St, Houston, TX 77002" required />
+          </div>
+
+          <button type="submit" class="btn-submit">
+            Request My Cash Offer &rarr;
+          </button>
+
+          <div class="sms-consent">
+            By submitting this form, you agree to be contacted by
+            <strong>LTI Property Advisors</strong> at the phone number
+            provided, including via SMS text message. Message frequency varies.
+            Message and data rates may apply. Reply <strong>STOP</strong> to
+            opt out at any time. Reply <strong>HELP</strong> for assistance.
+            Consent is not a condition of any purchase or service. See our
+            <a href="#privacy-section">Privacy Policy</a> and
+            <a href="#terms-section">Terms of Service</a> for details.
+          </div>
+        </form>
+
+        <div class="success-msg" id="success-msg">
+          <div class="check">&#9989;</div>
+          <h3>We received your request!</h3>
+          <p>
+            A member of the LTI Property Advisors team will reach out
+            within 24 hours to discuss your property.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ──────────────────────────── -->
+  <section class="how" id="how">
+    <p class="section-label">Simple Process</p>
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Three steps from inquiry to offer. No pressure, no obligation.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Submit Your Property</h3>
+        <p>Fill out the form with your name, phone, and property address. Takes under a minute.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>We Review &amp; Connect</h3>
+        <p>Our team reviews your property and reaches out to learn more about your situation and timeline.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Receive Your Offer</h3>
+        <p>Get a fair, no-obligation cash offer. You decide if it works — no pressure, ever.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LEGAL ─────────────────────────────────── -->
+  <section class="legal" id="legal">
+    <div class="legal-inner">
+      <p class="section-label">Legal</p>
+      <h2 class="section-title">Policies &amp; Terms</h2>
+
+      <!-- PRIVACY POLICY -->
+      <div class="accordion" id="privacy-section">
+        <button class="accordion-header" onclick="toggle(this)">
+          Privacy Policy
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-body">
+          <p><em>LTI Property Advisors &mdash; Effective Date: May 24, 2026</em></p>
+
+          <h3>1. Information We Collect</h3>
+          <p>When you submit our property inquiry form, we collect your name, phone number,
+          property address, and any additional information you voluntarily provide.</p>
+
+          <h3>2. How We Use Your Information</h3>
+          <p>We use the information you provide to contact you regarding your property inquiry
+          and cash offer request, send SMS text messages related to your submission, respond
+          to your questions and requests, and improve our services.</p>
+
+          <h3>3. SMS Communications</h3>
+          <p>By submitting our form, you expressly consent to receive SMS text messages from
+          LTI Property Advisors at the phone number you provided. These messages may include
+          follow-up on your property inquiry, scheduling information, and offer-related
+          communications. Message frequency varies based on your inquiry. Message and data
+          rates may apply.</p>
+          <p>To opt out of SMS messages at any time, reply <strong>STOP</strong> to any
+          message we send. To request assistance, reply <strong>HELP</strong>. For support,
+          contact us at info@ltipropertyadvisors.com.</p>
+
+          <h3>4. Information Sharing</h3>
+          <p>We do not sell, trade, or rent your personal information to third parties. We
+          may share your information with trusted service providers who assist us in
+          operating our business, subject to confidentiality obligations. We do not share
+          your information with unaffiliated third parties for their own marketing
+          purposes.</p>
+
+          <h3>5. Data Security</h3>
+          <p>We take reasonable measures to protect your personal information from
+          unauthorized access, use, or disclosure. However, no method of transmission
+          over the internet is 100% secure.</p>
+
+          <h3>6. Retention</h3>
+          <p>We retain your information for as long as necessary to fulfill the purposes
+          described in this policy or as required by law.</p>
+
+          <h3>7. Your Rights</h3>
+          <p>You may request access to, correction of, or deletion of your personal
+          information by contacting us at info@ltipropertyadvisors.com. We will respond
+          within a reasonable timeframe.</p>
+
+          <h3>8. Contact</h3>
+          <p>LTI Property Advisors &mdash; Houston, Texas<br>
+          Email: info@ltipropertyadvisors.com</p>
+
+          <h3>9. Changes to This Policy</h3>
+          <p>We may update this Privacy Policy from time to time. Changes will be posted
+          on this page with an updated effective date.</p>
+        </div>
+      </div>
+
+      <!-- TERMS OF SERVICE -->
+      <div class="accordion" id="terms-section">
+        <button class="accordion-header" onclick="toggle(this)">
+          Terms of Service
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-body">
+          <p><em>LTI Property Advisors &mdash; Effective Date: May 24, 2026</em></p>
+
+          <h3>1. Acceptance of Terms</h3>
+          <p>By submitting your information through our website, you agree to these Terms
+          of Service. If you do not agree, please do not submit your information.</p>
+
+          <h3>2. Our Services</h3>
+          <p>LTI Property Advisors provides real estate advisory and property acquisition
+          services. Submitting the inquiry form requests that we evaluate your property
+          and contact you regarding a potential cash offer. Submission of the form does
+          not obligate either party to complete a transaction.</p>
+
+          <h3>3. SMS Messaging Terms</h3>
+          <p>By providing your phone number and submitting our form, you consent to
+          receive SMS text messages from LTI Property Advisors related to your property
+          inquiry only.</p>
+          <ul>
+            <li><strong>To opt out:</strong> Reply STOP to any message. You will receive
+            one confirmation and no further SMS contact.</li>
+            <li><strong>To get help:</strong> Reply HELP or email
+            info@ltipropertyadvisors.com.</li>
+            <li><strong>Message frequency:</strong> Varies based on your inquiry
+            status.</li>
+            <li><strong>Rates:</strong> Message and data rates may apply depending on
+            your carrier plan.</li>
+          </ul>
+          <p>Opting out of SMS does not affect any other business relationship with
+          LTI Property Advisors.</p>
+
+          <h3>4. No Obligation</h3>
+          <p>Any offer or communication from LTI Property Advisors is non-binding until
+          a written purchase agreement is signed by all parties. We make no guarantee
+          that a specific offer amount will be provided.</p>
+
+          <h3>5. Accuracy of Information</h3>
+          <p>You represent that the information you submit is accurate and that you are
+          authorized to submit it. Providing false or misleading information may result
+          in termination of service.</p>
+
+          <h3>6. Limitation of Liability</h3>
+          <p>LTI Property Advisors shall not be liable for any indirect, incidental, or
+          consequential damages arising from your use of this website or our services.
+          Our total liability shall not exceed the amount paid by you for any services
+          rendered.</p>
+
+          <h3>7. Governing Law</h3>
+          <p>These Terms are governed by the laws of the State of Texas. Any disputes
+          shall be resolved in the courts of Harris County, Texas.</p>
+
+          <h3>8. Contact</h3>
+          <p>LTI Property Advisors &mdash; Houston, Texas<br>
+          Email: info@ltipropertyadvisors.com</p>
+
+          <h3>9. Updates</h3>
+          <p>We may revise these Terms at any time. Continued use of our website after
+          changes constitutes acceptance of the revised Terms.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────── -->
+  <footer>
+    <p><strong>LTI Property Advisors</strong> &mdash; Houston, Texas</p>
+    <p>info@ltipropertyadvisors.com</p>
+    <div class="footer-links">
+      <a href="#privacy-section">Privacy Policy</a>
+      <a href="#terms-section">Terms of Service</a>
+    </div>
+    <p style="margin-top:14px;">&copy; 2026 LTI Property Advisors. All rights reserved.</p>
+  </footer>
+
+  <script>
+    /* Accordion toggle */
+    function toggle(btn) {
+      btn.closest('.accordion').classList.toggle('open');
+    }
+
+    /* Form submit — show success, then POST to Formspree when configured */
+    document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+      const action = this.action;
+      if (!action || action.includes('YOUR_FORM_ID')) {
+        /* Demo mode: no Formspree yet — just show success */
+        e.preventDefault();
+        this.style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+      }
+      /* If Formspree is configured, let the form POST normally */
+    });
+  </script>
+</body>
+</html>
