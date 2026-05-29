@@ -284,57 +284,38 @@
     .legal .section-title { text-align: left; }
     .legal .section-title { margin-bottom: 28px; }
 
-    .accordion {
+    .policy-block {
       border: 1.5px solid var(--gray-300);
       border-radius: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 28px;
       overflow: hidden;
     }
-    .accordion-header {
-      width: 100%;
+    .policy-block h3.policy-title {
       background: var(--gray-50);
-      border: none;
       padding: 18px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: .95rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--navy);
-      text-align: left;
-      transition: background .2s;
+      border-bottom: 1.5px solid var(--gray-300);
+      margin: 0;
     }
-    .accordion-header:hover { background: var(--gray-100); }
-    .accordion-icon {
-      font-size: 1.4rem;
-      font-weight: 300;
-      color: var(--gray-500);
-      transition: transform .25s;
-      line-height: 1;
-    }
-    .accordion.open .accordion-icon { transform: rotate(45deg); }
-    .accordion-body {
-      display: none;
+    .policy-body {
       padding: 28px 28px 24px;
       font-size: .875rem;
       color: var(--gray-700);
       line-height: 1.8;
-      border-top: 1.5px solid var(--gray-300);
     }
-    .accordion.open .accordion-body { display: block; }
-    .accordion-body h3 {
+    .policy-body h3 {
       font-size: .875rem;
       font-weight: 700;
       color: var(--navy);
       margin: 22px 0 6px;
     }
-    .accordion-body h3:first-child { margin-top: 0; }
-    .accordion-body p   { margin-bottom: 10px; }
-    .accordion-body ul  { padding-left: 22px; margin-bottom: 12px; }
-    .accordion-body li  { margin-bottom: 5px; }
-    .accordion-body strong { color: var(--gray-800); }
+    .policy-body h3:first-child { margin-top: 0; }
+    .policy-body p   { margin-bottom: 10px; }
+    .policy-body ul  { padding-left: 22px; margin-bottom: 12px; }
+    .policy-body li  { margin-bottom: 5px; }
+    .policy-body strong { color: var(--gray-800); }
 
     /* ── FOOTER ─────────────────────────────── */
     footer {
@@ -354,18 +335,34 @@
       margin: 10px 0 4px;
     }
 
+    /* ── DESKTOP: keep hero-copy left, form right ── */
+    @media (min-width: 801px) {
+      .hero-copy { order: 1; }
+      .form-card  { order: 2; }
+    }
+
     /* ── RESPONSIVE ─────────────────────────── */
     @media (max-width: 800px) {
       nav { padding: 14px 18px; }
       .nav-links { display: none; }
 
-      .hero { padding: 48px 20px 56px; }
+      /* Form first on mobile — no scroll needed to find CTA */
+      .hero { padding: 18px 16px 48px; }
       .hero-inner {
         grid-template-columns: 1fr;
-        gap: 36px;
+        gap: 28px;
       }
-      .hero h1 { font-size: 1.85rem; }
-      .form-card { padding: 28px 22px; }
+      /* Form card renders first (it's first in DOM order) */
+      .form-card  { order: 1; }
+      .hero-copy  { order: 2; }
+
+      .hero h1 { font-size: 1.75rem; }
+      .form-card { padding: 24px 18px; }
+
+      /* Tighten form groups on mobile so full form fits */
+      .form-group { margin-bottom: 12px; }
+      .btn-submit { padding: 13px; }
+      .sms-consent { font-size: .68rem; margin-top: 11px; }
 
       .how { padding: 56px 20px; }
       .steps { grid-template-columns: 1fr; max-width: 380px; gap: 18px; }
@@ -392,26 +389,11 @@
   <section class="hero" id="offer">
     <div class="hero-inner">
 
-      <div class="hero-copy">
-        <div class="hero-badge">Houston Real Estate Advisors</div>
-        <h1>Get a <em>Fair Cash Offer</em><br>on Your Property</h1>
-        <p class="hero-sub">
-          Tell us about your property and we'll be in touch with a
-          no-obligation offer. Fast, simple, and on your timeline.
-        </p>
-        <ul class="hero-bullets">
-          <li>No repairs or renovations required</li>
-          <li>No agent commissions or hidden fees</li>
-          <li>No showings or open houses</li>
-          <li>Close in as little as 7 days</li>
-        </ul>
-      </div>
-
       <div class="form-card" id="form-card">
         <h2>Request Your Cash Offer</h2>
         <p class="form-sub">Free &nbsp;·&nbsp; No obligation &nbsp;·&nbsp; Takes 60 seconds</p>
 
-        <form id="inquiry-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <form id="inquiry-form" action="https://formspree.io/f/meednvky" method="POST">
           <div class="form-group">
             <label for="name">Full Name</label>
             <input type="text" id="name" name="name"
@@ -454,6 +436,21 @@
         </div>
       </div>
 
+      <div class="hero-copy">
+        <div class="hero-badge">Houston Real Estate Advisors</div>
+        <h1>Get a <em>Fair Cash Offer</em><br>on Your Property</h1>
+        <p class="hero-sub">
+          Tell us about your property and we'll be in touch with a
+          no-obligation offer. Fast, simple, and on your timeline.
+        </p>
+        <ul class="hero-bullets">
+          <li>No repairs or renovations required</li>
+          <li>No agent commissions or hidden fees</li>
+          <li>No showings or open houses</li>
+          <li>Close in as little as 7 days</li>
+        </ul>
+      </div>
+
     </div>
   </section>
 
@@ -489,12 +486,9 @@
       <h2 class="section-title">Policies &amp; Terms</h2>
 
       <!-- PRIVACY POLICY -->
-      <div class="accordion" id="privacy-section">
-        <button class="accordion-header" onclick="toggle(this)">
-          Privacy Policy
-          <span class="accordion-icon">+</span>
-        </button>
-        <div class="accordion-body">
+      <div class="policy-block" id="privacy-section">
+        <h3 class="policy-title">Privacy Policy</h3>
+        <div class="policy-body">
           <p><em>LTI Property Advisors &mdash; Effective Date: May 24, 2026</em></p>
 
           <h3>1. Information We Collect</h3>
@@ -548,12 +542,9 @@
       </div>
 
       <!-- TERMS OF SERVICE -->
-      <div class="accordion" id="terms-section">
-        <button class="accordion-header" onclick="toggle(this)">
-          Terms of Service
-          <span class="accordion-icon">+</span>
-        </button>
-        <div class="accordion-body">
+      <div class="policy-block" id="terms-section">
+        <h3 class="policy-title">Terms of Service</h3>
+        <div class="policy-body">
           <p><em>LTI Property Advisors &mdash; Effective Date: May 24, 2026</em></p>
 
           <h3>1. Acceptance of Terms</h3>
@@ -628,21 +619,21 @@
   </footer>
 
   <script>
-    /* Accordion toggle */
-    function toggle(btn) {
-      btn.closest('.accordion').classList.toggle('open');
-    }
-
-    /* Form submit — show success, then POST to Formspree when configured */
+    /* Formspree AJAX submit — show success screen after submission */
     document.getElementById('inquiry-form').addEventListener('submit', function(e) {
-      const action = this.action;
-      if (!action || action.includes('YOUR_FORM_ID')) {
-        /* Demo mode: no Formspree yet — just show success */
-        e.preventDefault();
-        this.style.display = 'none';
+      e.preventDefault();
+      const form = this;
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      }).then(function(response) {
+        form.style.display = 'none';
         document.getElementById('success-msg').style.display = 'block';
-      }
-      /* If Formspree is configured, let the form POST normally */
+      }).catch(function() {
+        form.style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+      });
     });
   </script>
 </body>
