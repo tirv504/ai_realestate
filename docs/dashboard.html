@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LTI Lead Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0d1b3e;
+      --gold:    #c8952a;
+      --white:   #ffffff;
+      --gray-50: #f9fafb;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-400:#9ca3af;
+      --gray-500:#6b7280;
+      --gray-700:#374151;
+      --gray-800:#1f2937;
+      --gray-900:#111827;
+
+      --hot-bg:   #fef2f2;
+      --hot-bd:   #ef4444;
+      --hot-text: #991b1b;
+      --hot-badge:#ef4444;
+
+      --warm-bg:  #fefce8;
+      --warm-bd:  #f59e0b;
+      --warm-text:#92400e;
+      --warm-badge:#f59e0b;
+
+      --cold-bg:  #f9fafb;
+      --cold-bd:  #9ca3af;
+      --cold-text:#374151;
+      --cold-badge:#6b7280;
+
+      --dead-bg:  #1f2937;
+      --dead-bd:  #374151;
+      --dead-text:#9ca3af;
+      --dead-badge:#374151;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-800);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ─────────────────────────── */
+    header {
+      background: var(--navy);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .header-title {
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+    .header-title span { color: var(--gold); }
+    .header-meta {
+      color: rgba(255,255,255,.5);
+      font-size: .75rem;
+    }
+
+    /* ── LOAD BAR ───────────────────────── */
+    .load-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .load-label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .file-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-family: inherit;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .file-btn:hover { opacity: .85; }
+    #file-input { display: none; }
+    .load-hint {
+      font-size: .75rem;
+      color: var(--gray-400);
+    }
+    #loaded-name {
+      font-size: .75rem;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* ── STATS BAR ──────────────────────── */
+    .stats-bar {
+      display: flex;
+      gap: 0;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      overflow-x: auto;
+    }
+    .stat {
+      flex: 1;
+      min-width: 80px;
+      padding: 12px 20px;
+      text-align: center;
+      border-right: 1px solid var(--gray-200);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-val {
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .stat-lbl {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+    .stat.hot  .stat-val { color: var(--hot-badge); }
+    .stat.warm .stat-val { color: var(--warm-badge); }
+    .stat.cold .stat-val { color: var(--cold-badge); }
+    .stat.dead .stat-val { color: var(--gray-400); }
+    .stat.hot  .stat-lbl { color: var(--hot-text); }
+    .stat.warm .stat-lbl { color: var(--warm-text); }
+    .stat.cold .stat-lbl { color: var(--cold-text); }
+    .stat.dead .stat-lbl { color: var(--gray-400); }
+
+    /* ── MAIN ───────────────────────────── */
+    main {
+      padding: 20px 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── TABLE WRAPPER ──────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+      background: var(--white);
+    }
+    thead th {
+      background: var(--gray-800);
+      color: rgba(255,255,255,.8);
+      padding: 11px 14px;
+      text-align: left;
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    thead th:hover { color: var(--white); }
+    thead th.sorted { color: var(--gold); }
+    thead th .sort-arrow { margin-left: 4px; opacity: .6; }
+
+    tbody tr {
+      border-left: 4px solid transparent;
+      transition: filter .12s;
+    }
+    tbody tr:hover { filter: brightness(.96); }
+    tbody tr.hot  {
+      background: var(--hot-bg);
+      border-left-color: var(--hot-bd);
+    }
+    tbody tr.warm {
+      background: var(--warm-bg);
+      border-left-color: var(--warm-bd);
+    }
+    tbody tr.cold {
+      background: var(--cold-bg);
+      border-left-color: var(--cold-bd);
+    }
+    tbody tr.dead {
+      background: var(--dead-bg);
+      border-left-color: var(--dead-bd);
+    }
+
+    td {
+      padding: 10px 14px;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    tbody tr.dead td { color: var(--dead-text); }
+    tbody tr.dead td a { color: #6b7280; }
+
+    /* score badge */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 100px;
+      font-size: .68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--white);
+    }
+    .badge.hot  { background: var(--hot-badge); }
+    .badge.warm { background: var(--warm-badge); color: #1f2937; }
+    .badge.cold { background: var(--cold-badge); }
+    .badge.dead { background: var(--dead-badge); }
+
+    /* urgency pill */
+    .urgency {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-size: .78rem;
+      font-weight: 800;
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+    .urgency.u-high  { background: #fecaca; color: #991b1b; }
+    .urgency.u-med   { background: #fef08a; color: #713f12; }
+    .urgency.u-low   { background: var(--gray-200); color: var(--gray-500); }
+
+    /* equity */
+    .eq {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .eq.high    { color: #16a34a; }
+    .eq.medium  { color: #ca8a04; }
+    .eq.low     { color: #dc2626; }
+    .eq.unknown { color: var(--gray-400); }
+
+    /* phone link */
+    td a.phone-link {
+      color: var(--navy);
+      text-decoration: none;
+      font-family: 'Courier New', monospace;
+      font-size: .78rem;
+    }
+    tbody tr.dead td a.phone-link { color: var(--dead-text); }
+    td a.phone-link:hover { text-decoration: underline; }
+
+    /* action text */
+    .action-text {
+      font-size: .78rem;
+      color: var(--gray-500);
+      line-height: 1.55;
+      max-width: 300px;
+    }
+    tbody tr.dead .action-text { color: #6b7280; }
+
+    /* name + address */
+    .lead-name {
+      font-weight: 600;
+      color: var(--gray-900);
+      white-space: nowrap;
+    }
+    tbody tr.dead .lead-name { color: var(--dead-text); }
+    .lead-addr {
+      font-size: .75rem;
+      color: var(--gray-500);
+      white-space: nowrap;
+    }
+
+    /* ── EMPTY STATE ────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--gray-400);
+    }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 1rem; color: var(--gray-500); margin-bottom: 6px; }
+    .empty-state p  { font-size: .85rem; }
+
+    /* ── DRAG OVERLAY ───────────────────── */
+    body.drag-over::after {
+      content: 'Drop scored_leads.json here';
+      position: fixed;
+      inset: 0;
+      background: rgba(13,27,62,.88);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      z-index: 9999;
+    }
+
+    /* ── RESPONSIVE ─────────────────────── */
+    @media (max-width: 640px) {
+      header { padding: 12px 16px; }
+      .stat { padding: 10px 12px; }
+      .stat-val { font-size: 1.3rem; }
+      main { padding: 14px 8px; }
+      thead th, td { padding: 9px 10px; }
+      .action-text { max-width: 180px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="header-title">LTI <span>Lead Dashboard</span></div>
+    </div>
+    <div class="header-meta" id="header-meta">Demo data — load scored_leads.json to see real leads</div>
+  </header>
+
+  <div class="load-bar">
+    <span class="load-label">Data source</span>
+    <button class="file-btn" onclick="document.getElementById('file-input').click()">
+      &#8593; Load JSON
+    </button>
+    <input type="file" id="file-input" accept=".json" />
+    <span class="load-hint">or drag &amp; drop scored_leads.json anywhere on the page</span>
+    <span id="loaded-name"></span>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat hot">
+      <div class="stat-val" id="cnt-hot">0</div>
+      <div class="stat-lbl">Hot</div>
+    </div>
+    <div class="stat warm">
+      <div class="stat-val" id="cnt-warm">0</div>
+      <div class="stat-lbl">Warm</div>
+    </div>
+    <div class="stat cold">
+      <div class="stat-val" id="cnt-cold">0</div>
+      <div class="stat-lbl">Cold</div>
+    </div>
+    <div class="stat dead">
+      <div class="stat-val" id="cnt-dead">0</div>
+      <div class="stat-lbl">Dead</div>
+    </div>
+    <div class="stat" style="flex:2; text-align:left;">
+      <div class="stat-val" id="cnt-total" style="color:var(--gray-700)">0</div>
+      <div class="stat-lbl" style="color:var(--gray-500)">Total Leads</div>
+    </div>
+  </div>
+
+  <main>
+    <div class="table-wrap">
+      <table id="leads-table">
+        <thead>
+          <tr>
+            <th data-col="lead_score" class="sorted">Score <span class="sort-arrow">&#9660;</span></th>
+            <th data-col="urgency_score">Urgency <span class="sort-arrow"></span></th>
+            <th data-col="seller_name">Name / Address <span class="sort-arrow"></span></th>
+            <th data-col="phone">Phone <span class="sort-arrow"></span></th>
+            <th data-col="equity_confidence">Equity <span class="sort-arrow"></span></th>
+            <th data-col="recommended_next_action">Recommended Action <span class="sort-arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="leads-body">
+          <!-- populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    /* ── Constants ────────────────────────────────── */
+    const SCORE_RANK = { hot: 3, warm: 2, cold: 1, dead: 0 };
+
+    const DEMO = [
+      { seller_name: "DEMO DATA", property_address: "Load scored_leads.json to see real leads",
+        phone: "", lead_score: "hot", urgency_score: 9, equity_confidence: "high",
+        recommended_next_action: "Drop your scored_leads.json file on this page" },
+      { seller_name: "SAMPLE LEAD", property_address: "123 Example St, Houston TX 77003",
+        phone: "+17135550001", lead_score: "warm", urgency_score: 5, equity_confidence: "medium",
+        recommended_next_action: "Follow up within 48 hours with soft close" },
+      { seller_name: "ANOTHER LEAD", property_address: "456 Sample Ave, Houston TX 77011",
+        phone: "+17135550002", lead_score: "cold", urgency_score: 2, equity_confidence: "unknown",
+        recommended_next_action: "One more SMS in 3 days, then archive if no response" },
+      { seller_name: "NO EQUITY", property_address: "789 Test Blvd, Houston TX 77023",
+        phone: "", lead_score: "dead", urgency_score: 4, equity_confidence: "low",
+        recommended_next_action: "Archive — no equity position to work with" },
+    ];
+
+    /* ── State ────────────────────────────────────── */
+    let allLeads    = DEMO.slice();
+    let sortCol     = "lead_score";
+    let sortAsc     = false;
+
+    /* ── Sorting ──────────────────────────────────── */
+    function sortedLeads(leads) {
+      return [...leads].sort((a, b) => {
+        let av = a[sortCol], bv = b[sortCol];
+        if (sortCol === "lead_score") { av = SCORE_RANK[av] ?? -1; bv = SCORE_RANK[bv] ?? -1; }
+        if (sortCol === "urgency_score") { av = Number(av) || 0; bv = Number(bv) || 0; }
+        if (av < bv) return sortAsc ? -1 : 1;
+        if (av > bv) return sortAsc ?  1 : -1;
+        // secondary: urgency desc
+        if (sortCol !== "urgency_score") {
+          const ua = Number(a.urgency_score) || 0, ub = Number(b.urgency_score) || 0;
+          return ub - ua;
+        }
+        return 0;
+      });
+    }
+
+    /* ── Render ───────────────────────────────────── */
+    function urgencyClass(u) {
+      if (u >= 7) return "u-high";
+      if (u >= 4) return "u-med";
+      return "u-low";
+    }
+
+    function fmtPhone(raw) {
+      if (!raw) return '<span style="color:var(--gray-300)">—</span>';
+      const digits = raw.replace(/\D/g, "");
+      const d = digits.length === 11 ? digits.slice(1) : digits;
+      if (d.length === 10)
+        return `<a class="phone-link" href="tel:+1${d}">(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}</a>`;
+      return `<a class="phone-link" href="tel:${raw}">${raw}</a>`;
+    }
+
+    function render() {
+      const sorted = sortedLeads(allLeads);
+      const body   = document.getElementById("leads-body");
+
+      // stats
+      const counts = { hot:0, warm:0, cold:0, dead:0 };
+      allLeads.forEach(l => { if (counts[l.lead_score] !== undefined) counts[l.lead_score]++; });
+      document.getElementById("cnt-hot").textContent  = counts.hot;
+      document.getElementById("cnt-warm").textContent = counts.warm;
+      document.getElementById("cnt-cold").textContent = counts.cold;
+      document.getElementById("cnt-dead").textContent = counts.dead;
+      document.getElementById("cnt-total").textContent = allLeads.length;
+
+      // sort header arrows
+      document.querySelectorAll("thead th").forEach(th => {
+        th.classList.remove("sorted");
+        const arrow = th.querySelector(".sort-arrow");
+        if (arrow) arrow.textContent = "";
+      });
+      const activeHeader = document.querySelector(`thead th[data-col="${sortCol}"]`);
+      if (activeHeader) {
+        activeHeader.classList.add("sorted");
+        const arrow = activeHeader.querySelector(".sort-arrow");
+        if (arrow) arrow.textContent = sortAsc ? " ▲" : " ▼";
+      }
+
+      if (sorted.length === 0) {
+        body.innerHTML = `<tr><td colspan="6">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No leads loaded</h3>
+            <p>Drop scored_leads.json on this page or use the Load JSON button above.</p>
+          </div>
+        </td></tr>`;
+        return;
+      }
+
+      body.innerHTML = sorted.map(lead => {
+        const score  = (lead.lead_score || "cold").toLowerCase();
+        const uScore = Number(lead.urgency_score) || 0;
+        const eq     = (lead.equity_confidence || "unknown").toLowerCase();
+        const name   = lead.seller_name   || "—";
+        const addr   = lead.property_address || "";
+        const action = lead.recommended_next_action || "—";
+
+        return `<tr class="${score}">
+          <td><span class="badge ${score}">${score}</span></td>
+          <td><span class="urgency ${urgencyClass(uScore)}">${uScore}</span></td>
+          <td>
+            <div class="lead-name">${esc(name)}</div>
+            <div class="lead-addr">${esc(addr)}</div>
+          </td>
+          <td>${fmtPhone(lead.phone)}</td>
+          <td><span class="eq ${eq}">${eq}</span></td>
+          <td><div class="action-text">${esc(action)}</div></td>
+        </tr>`;
+      }).join("");
+    }
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;");
+    }
+
+    /* ── Column sort ──────────────────────────────── */
+    document.querySelectorAll("thead th[data-col]").forEach(th => {
+      th.addEventListener("click", () => {
+        const col = th.dataset.col;
+        if (sortCol === col) { sortAsc = !sortAsc; }
+        else { sortCol = col; sortAsc = col !== "lead_score" && col !== "urgency_score"; }
+        render();
+      });
+    });
+
+    /* ── File loading ─────────────────────────────── */
+    function loadJson(text, filename) {
+      try {
+        const data = JSON.parse(text);
+        if (!Array.isArray(data)) throw new Error("Expected a JSON array");
+        allLeads = data;
+        sortCol  = "lead_score";
+        sortAsc  = false;
+        document.getElementById("loaded-name").textContent = filename;
+        document.getElementById("header-meta").textContent =
+          `${data.length} leads · ${filename}`;
+        render();
+      } catch(e) {
+        alert("Could not parse JSON: " + e.message);
+      }
+    }
+
+    document.getElementById("file-input").addEventListener("change", function() {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => loadJson(e.target.result, file.name);
+      reader.readAsText(file);
+    });
+
+    /* Drag-and-drop anywhere on the page */
+    document.addEventListener("dragover", e => {
+      e.preventDefault();
+      document.body.classList.add("drag-over");
+    });
+    document.addEventListener("dragleave", e => {
+      if (e.relatedTarget === null) document.body.classList.remove("drag-over");
+    });
+    document.addEventListener("drop", e => {
+      e.preventDefault();
+      document.body.classList.remove("drag-over");
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => loadJson(ev.target.result, file.name);
+      reader.readAsText(file);
+    });
+
+    /* ── Initial render ───────────────────────────── */
+    render();
+  </script>
+</body>
+</html>
