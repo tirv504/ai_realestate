@@ -298,6 +298,43 @@
       white-space: nowrap;
     }
 
+    /* ── STATUS DROPDOWN ────────────────── */
+    .status-select {
+      appearance: none;
+      -webkit-appearance: none;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 6px;
+      padding: 5px 26px 5px 9px;
+      font-family: inherit;
+      font-size: .75rem;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: var(--white);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%236b7280' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 7px center;
+      min-width: 136px;
+      outline: none;
+      transition: border-color .15s, background-color .15s;
+    }
+    .status-select:focus { border-color: var(--navy); }
+
+    .status-select[data-status="Not Contacted"] {
+      color: var(--gray-500); border-color: var(--gray-300); background-color: var(--white);
+    }
+    .status-select[data-status="Contacted"] {
+      color: #1d4ed8; border-color: #93c5fd; background-color: #eff6ff;
+    }
+    .status-select[data-status="Interested"] {
+      color: #15803d; border-color: #86efac; background-color: #f0fdf4;
+    }
+    .status-select[data-status="Not Interested"] {
+      color: #b91c1c; border-color: #fca5a5; background-color: #fef2f2;
+    }
+    .status-select[data-status="Under Contract"] {
+      color: #92400e; border-color: #fcd34d; background-color: #fffbeb;
+    }
+
     /* ── EMPTY STATE ────────────────────── */
     .empty-state {
       text-align: center;
@@ -387,6 +424,7 @@
             <th data-col="phone">Phone <span class="sort-arrow"></span></th>
             <th data-col="equity_confidence">Equity <span class="sort-arrow"></span></th>
             <th data-col="recommended_next_action">Recommended Action <span class="sort-arrow"></span></th>
+            <th style="cursor:default;">Status</th>
           </tr>
         </thead>
         <tbody id="leads-body">
@@ -399,6 +437,24 @@
   <script>
     /* ── Constants ────────────────────────────────── */
     const SCORE_RANK = { hot: 3, warm: 2, cold: 1, dead: 0 };
+    const LS_KEY = "lti_lead_statuses";
+    const STATUS_OPTIONS = [
+      "Not Contacted", "Contacted", "Interested", "Not Interested", "Under Contract"
+    ];
+
+    /* ── localStorage helpers ─────────────────────── */
+    function leadKey(lead) {
+      return (lead.seller_name || "") + "|" + (lead.property_address || "");
+    }
+    function getStatuses() {
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || "{}"); }
+      catch { return {}; }
+    }
+    function saveStatus(key, val) {
+      const s = getStatuses();
+      s[key] = val;
+      localStorage.setItem(LS_KEY, JSON.stringify(s));
+    }
 
     const DEMO = [
       { seller_name: "DEMO DATA", property_address: "Load scored_leads.json to see real leads",
@@ -480,7 +536,7 @@
       }
 
       if (sorted.length === 0) {
-        body.innerHTML = `<tr><td colspan="6">
+        body.innerHTML = `<tr><td colspan="7">
           <div class="empty-state">
             <div class="empty-icon">📋</div>
             <h3>No leads loaded</h3>
@@ -490,13 +546,20 @@
         return;
       }
 
+      const statuses = getStatuses();
+
       body.innerHTML = sorted.map(lead => {
-        const score  = (lead.lead_score || "cold").toLowerCase();
-        const uScore = Number(lead.urgency_score) || 0;
-        const eq     = (lead.equity_confidence || "unknown").toLowerCase();
-        const name   = lead.seller_name   || "—";
-        const addr   = lead.property_address || "";
-        const action = lead.recommended_next_action || "—";
+        const score   = (lead.lead_score || "cold").toLowerCase();
+        const uScore  = Number(lead.urgency_score) || 0;
+        const eq      = (lead.equity_confidence || "unknown").toLowerCase();
+        const name    = lead.seller_name || "—";
+        const addr    = lead.property_address || "";
+        const action  = lead.recommended_next_action || "—";
+        const key     = leadKey(lead);
+        const status  = statuses[key] || "Not Contacted";
+        const opts    = STATUS_OPTIONS.map(o =>
+          `<option${o === status ? " selected" : ""}>${esc(o)}</option>`
+        ).join("");
 
         return `<tr class="${score}">
           <td><span class="badge ${score}">${score}</span></td>
@@ -508,6 +571,7 @@
           <td>${fmtPhone(lead.phone)}</td>
           <td><span class="eq ${eq}">${eq}</span></td>
           <td><div class="action-text">${esc(action)}</div></td>
+          <td><select class="status-select" data-key="${esc(key)}" data-status="${esc(status)}">${opts}</select></td>
         </tr>`;
       }).join("");
     }
@@ -571,6 +635,14 @@
       const reader = new FileReader();
       reader.onload = ev => loadJson(ev.target.result, file.name);
       reader.readAsText(file);
+    });
+
+    /* ── Status change — save + restyle ──────────── */
+    document.getElementById("leads-body").addEventListener("change", function(e) {
+      const sel = e.target;
+      if (!sel.classList.contains("status-select")) return;
+      sel.dataset.status = sel.value;
+      saveStatus(sel.dataset.key, sel.value);
     });
 
     /* ── Initial render ───────────────────────────── */
