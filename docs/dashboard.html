@@ -552,9 +552,9 @@
         const score   = (lead.lead_score || "cold").toLowerCase();
         const uScore  = Number(lead.urgency_score) || 0;
         const eq      = (lead.equity_confidence || "unknown").toLowerCase();
-        const name    = lead.seller_name || "—";
+        const name    = lead.seller_name || "";
         const addr    = lead.property_address || "";
-        const action  = lead.recommended_next_action || "—";
+        const action  = lead.recommended_next_action || "";
         const key     = leadKey(lead);
         const status  = statuses[key] || "Not Contacted";
         const opts    = STATUS_OPTIONS.map(o =>
