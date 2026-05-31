@@ -192,6 +192,30 @@
     .btn-submit:hover { background: var(--gold-h); }
     .btn-submit:active { transform: scale(.99); }
 
+    /* ── CHECKBOXES ─────────────────────────── */
+    .checkbox-group { margin-bottom: 12px; }
+    .checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      font-size: .78rem;
+      font-weight: 400;
+      color: var(--gray-700);
+      line-height: 1.55;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+    .checkbox-label input[type="checkbox"] {
+      margin-top: 2px;
+      flex-shrink: 0;
+      width: 15px;
+      height: 15px;
+      accent-color: var(--navy);
+      cursor: pointer;
+    }
+    .checkbox-label strong { color: var(--gray-800); font-weight: 600; }
+
     /* ── SMS CONSENT ────────────────────────── */
     .sms-consent {
       margin-top: 14px;
@@ -403,12 +427,25 @@
           <div class="form-group">
             <label for="phone">Phone Number</label>
             <input type="tel" id="phone" name="phone"
-                   placeholder="(713) 555-0100" required />
+                   placeholder="(713) 555-0100" />
           </div>
           <div class="form-group">
             <label for="address">Property Address</label>
             <input type="text" id="address" name="address"
                    placeholder="123 Main St, Houston, TX 77002" required />
+          </div>
+
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="consent_marketing" required />
+              <span>I agree to receive <strong>promotional and marketing</strong> SMS messages from LTI Property Advisors, including cash offer opportunities and real estate updates.</span>
+            </label>
+          </div>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="consent_transactional" required />
+              <span>I agree to receive <strong>transactional and service-related</strong> SMS messages from LTI Property Advisors, including offer updates, appointment reminders, and follow-up communications.</span>
+            </label>
           </div>
 
           <button type="submit" class="btn-submit">
@@ -512,11 +549,12 @@
           contact us at info@ltipropertyadvisors.com.</p>
 
           <h3>4. Information Sharing</h3>
-          <p>We do not sell, trade, or rent your personal information to third parties. We
-          may share your information with trusted service providers who assist us in
-          operating our business, subject to confidentiality obligations. We do not share
-          your information with unaffiliated third parties for their own marketing
-          purposes.</p>
+          <p>We do not sell, trade, rent, or share your personal information — including
+          your phone number — with third parties or affiliates for any marketing or
+          promotional purpose. We may share your information only with trusted service
+          providers (such as form processors and communication platforms) that assist us
+          in delivering our services, and only under strict confidentiality obligations.
+          No personal data is shared with unaffiliated third parties.</p>
 
           <h3>5. Data Security</h3>
           <p>We take reasonable measures to protect your personal information from
