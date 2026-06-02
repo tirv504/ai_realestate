@@ -298,48 +298,41 @@
     .step h3 { font-size: .95rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
     .step p  { font-size: .85rem; color: var(--gray-500); line-height: 1.65; }
 
-    /* ── LEGAL ──────────────────────────────── */
-    .legal {
-      padding: 72px 32px;
+    /* ── SERVICES ───────────────────────────── */
+    .services {
+      padding: 80px 32px;
       background: var(--white);
     }
-    .legal-inner { max-width: 820px; margin: 0 auto; }
-    .legal .section-label,
-    .legal .section-title { text-align: left; }
-    .legal .section-title { margin-bottom: 28px; }
+    .services-grid {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .service-card {
+      border: 1.5px solid var(--gray-200);
+      border-radius: 14px;
+      padding: 32px 24px;
+    }
+    .service-icon {
+      font-size: 1.8rem;
+      margin-bottom: 14px;
+      line-height: 1;
+    }
+    .service-card h3 { font-size: .97rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .service-card p  { font-size: .85rem; color: var(--gray-500); line-height: 1.7; }
 
-    .policy-block {
-      border: 1.5px solid var(--gray-300);
-      border-radius: 12px;
-      margin-bottom: 28px;
-      overflow: hidden;
-    }
-    .policy-block h3.policy-title {
+    /* ── LEGAL STRIP ────────────────────────── */
+    .legal-strip {
       background: var(--gray-50);
-      padding: 18px 24px;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--navy);
-      border-bottom: 1.5px solid var(--gray-300);
-      margin: 0;
+      border-top: 1px solid var(--gray-200);
+      padding: 28px 32px;
+      text-align: center;
+      font-size: .82rem;
+      color: var(--gray-500);
     }
-    .policy-body {
-      padding: 28px 28px 24px;
-      font-size: .875rem;
-      color: var(--gray-700);
-      line-height: 1.8;
-    }
-    .policy-body h3 {
-      font-size: .875rem;
-      font-weight: 700;
-      color: var(--navy);
-      margin: 22px 0 6px;
-    }
-    .policy-body h3:first-child { margin-top: 0; }
-    .policy-body p   { margin-bottom: 10px; }
-    .policy-body ul  { padding-left: 22px; margin-bottom: 12px; }
-    .policy-body li  { margin-bottom: 5px; }
-    .policy-body strong { color: var(--gray-800); }
+    .legal-strip a { color: var(--navy); font-weight: 600; text-decoration: underline; }
 
     /* ── FOOTER ─────────────────────────────── */
     footer {
@@ -391,8 +384,8 @@
       .how { padding: 56px 20px; }
       .steps { grid-template-columns: 1fr; max-width: 380px; gap: 18px; }
 
-      .legal { padding: 52px 20px; }
-      .accordion-body { padding: 20px; }
+      .services { padding: 52px 20px; }
+      .services-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -404,9 +397,10 @@
     <ul class="nav-links">
       <li><a href="#offer">Get an Offer</a></li>
       <li><a href="#how">How It Works</a></li>
+      <li><a href="#services">Services</a></li>
       <li><a href="about.html">About</a></li>
-      <li><a href="#privacy-section">Privacy</a></li>
-      <li><a href="#terms-section">Terms</a></li>
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="terms.html">Terms</a></li>
     </ul>
   </nav>
 
@@ -459,8 +453,8 @@
             Message and data rates may apply. Reply <strong>STOP</strong> to
             opt out at any time. Reply <strong>HELP</strong> for assistance.
             Consent is not a condition of any purchase or service. See our
-            <a href="#privacy-section">Privacy Policy</a> and
-            <a href="#terms-section">Terms of Service</a> for details.
+            <a href="privacy.html">Privacy Policy</a> and
+            <a href="terms.html">Terms of Service</a> for details.
           </div>
         </form>
 
@@ -517,142 +511,46 @@
     </div>
   </section>
 
-  <!-- ── LEGAL ─────────────────────────────────── -->
-  <section class="legal" id="legal">
-    <div class="legal-inner">
-      <p class="section-label">Legal</p>
-      <h2 class="section-title">Policies &amp; Terms</h2>
-
-      <!-- PRIVACY POLICY -->
-      <div class="policy-block" id="privacy-section">
-        <h3 class="policy-title">Privacy Policy</h3>
-        <div class="policy-body">
-          <p><em>Effective Date: May 24, 2026</em></p>
-
-          <h3>1. Information We Collect</h3>
-          <p>When you submit our property inquiry form, we collect your name, phone number,
-          property address, and any additional information you voluntarily provide.</p>
-
-          <h3>2. How We Use Your Information</h3>
-          <p>We use the information you provide to contact you regarding your property inquiry
-          and cash offer request, send SMS text messages related to your submission, respond
-          to your questions and requests, and improve our services.</p>
-
-          <h3>3. SMS Communications</h3>
-          <p>By submitting our form, you expressly consent to receive SMS text messages from
-          LTI Property Advisors at the phone number you provided. These messages may include
-          follow-up on your property inquiry, scheduling information, and offer-related
-          communications. Message frequency varies based on your inquiry. Message and data
-          rates may apply.</p>
-          <p>To opt out of SMS messages at any time, reply <strong>STOP</strong> to any
-          message we send. To request assistance, reply <strong>HELP</strong>. For support,
-          contact us at info@ltipropertyadvisors.com.</p>
-
-          <h3>4. Information Sharing</h3>
-          <p>We do not sell, trade, rent, or share your personal information — including
-          your phone number — with third parties or affiliates for any marketing or
-          promotional purpose. We may share your information only with trusted service
-          providers (such as form processors and communication platforms) that assist us
-          in delivering our services, and only under strict confidentiality obligations.
-          No personal data is shared with unaffiliated third parties.</p>
-
-          <h3>5. Data Security</h3>
-          <p>We take reasonable measures to protect your personal information from
-          unauthorized access, use, or disclosure. However, no method of transmission
-          over the internet is 100% secure.</p>
-
-          <h3>6. Retention</h3>
-          <p>We retain your information for as long as necessary to fulfill the purposes
-          described in this policy or as required by law.</p>
-
-          <h3>7. Your Rights</h3>
-          <p>You may request access to, correction of, or deletion of your personal
-          information by contacting us at info@ltipropertyadvisors.com. We will respond
-          within a reasonable timeframe.</p>
-
-          <h3>8. Contact</h3>
-          <p>LTI Property Advisors, Houston, Texas<br>
-          Email: info@ltipropertyadvisors.com</p>
-
-          <h3>9. Changes to This Policy</h3>
-          <p>We may update this Privacy Policy from time to time. Changes will be posted
-          on this page with an updated effective date.</p>
-        </div>
+  <!-- ── SERVICES ─────────────────────────────────── -->
+  <section class="services" id="services">
+    <p class="section-label" style="text-align:center">What We Offer</p>
+    <h2 class="section-title">Our Services</h2>
+    <p class="section-sub">We work directly with Houston homeowners who need to sell on their timeline.</p>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">&#127968;</div>
+        <h3>Cash Offers on Any Property</h3>
+        <p>We evaluate single-family homes, multi-family properties, and vacant land throughout Harris County and the greater Houston MSA.</p>
       </div>
-
-      <!-- TERMS OF SERVICE -->
-      <div class="policy-block" id="terms-section">
-        <h3 class="policy-title">Terms of Service</h3>
-        <div class="policy-body">
-          <p><em>Effective Date: May 24, 2026</em></p>
-
-          <h3>1. Acceptance of Terms</h3>
-          <p>By submitting your information through our website, you agree to these Terms
-          of Service. If you do not agree, please do not submit your information.</p>
-
-          <h3>2. Our Services</h3>
-          <p>LTI Property Advisors provides real estate advisory and property acquisition
-          services. Submitting the inquiry form requests that we evaluate your property
-          and contact you regarding a potential cash offer. Submission of the form does
-          not obligate either party to complete a transaction.</p>
-
-          <h3>3. SMS Messaging Terms</h3>
-          <p>By providing your phone number and submitting our form, you consent to
-          receive SMS text messages from LTI Property Advisors related to your property
-          inquiry only.</p>
-          <ul>
-            <li><strong>To opt out:</strong> Reply STOP to any message. You will receive
-            one confirmation and no further SMS contact.</li>
-            <li><strong>To get help:</strong> Reply HELP or email
-            info@ltipropertyadvisors.com.</li>
-            <li><strong>Message frequency:</strong> Varies based on your inquiry
-            status.</li>
-            <li><strong>Rates:</strong> Message and data rates may apply depending on
-            your carrier plan.</li>
-          </ul>
-          <p>Opting out of SMS does not affect any other business relationship with
-          LTI Property Advisors.</p>
-
-          <h3>4. No Obligation</h3>
-          <p>Any offer or communication from LTI Property Advisors is non-binding until
-          a written purchase agreement is signed by all parties. We make no guarantee
-          that a specific offer amount will be provided.</p>
-
-          <h3>5. Accuracy of Information</h3>
-          <p>You represent that the information you submit is accurate and that you are
-          authorized to submit it. Providing false or misleading information may result
-          in termination of service.</p>
-
-          <h3>6. Limitation of Liability</h3>
-          <p>LTI Property Advisors shall not be liable for any indirect, incidental, or
-          consequential damages arising from your use of this website or our services.
-          Our total liability shall not exceed the amount paid by you for any services
-          rendered.</p>
-
-          <h3>7. Governing Law</h3>
-          <p>These Terms are governed by the laws of the State of Texas. Any disputes
-          shall be resolved in the courts of Harris County, Texas.</p>
-
-          <h3>8. Contact</h3>
-          <p>LTI Property Advisors, Houston, Texas<br>
-          Email: info@ltipropertyadvisors.com</p>
-
-          <h3>9. Updates</h3>
-          <p>We may revise these Terms at any time. Continued use of our website after
-          changes constitutes acceptance of the revised Terms.</p>
-        </div>
+      <div class="service-card">
+        <div class="service-icon">&#9889;</div>
+        <h3>Fast, Flexible Closings</h3>
+        <p>Close in as little as 7 days — or on a schedule that works for you. No waiting on lender approvals or buyer contingencies.</p>
       </div>
-
+      <div class="service-card">
+        <div class="service-icon">&#128176;</div>
+        <h3>No Repairs or Commissions</h3>
+        <p>We buy properties as-is. No repairs required, no agent commissions, no open houses, and no hidden fees at closing.</p>
+      </div>
     </div>
   </section>
 
+  <!-- ── LEGAL STRIP ────────────────────────────────── -->
+  <div class="legal-strip">
+    By using this site you agree to our
+    <a href="privacy.html">Privacy Policy</a> and
+    <a href="terms.html">Terms of Service</a>.
+    SMS consent is not required to receive services.
+  </div>
+
   <!-- ── FOOTER ─────────────────────────────────── -->
   <footer>
-    <p><strong>LTI Property Advisors</strong> &mdash; Houston, Texas</p>
+    <p><strong>LTI Property Advisors</strong>, Houston, Texas</p>
     <p>info@ltipropertyadvisors.com</p>
     <div class="footer-links">
-      <a href="#privacy-section">Privacy Policy</a>
-      <a href="#terms-section">Terms of Service</a>
+      <a href="about.html">About</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
     </div>
     <p style="margin-top:14px;">&copy; 2026 LTI Property Advisors. All rights reserved.</p>
   </footer>
