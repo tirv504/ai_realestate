@@ -2,11 +2,14 @@
 *.csv
 *.xlsx
 *.txt
+!requirements.txt
 *.iso
+*.db
 __pycache__/
 .env
 .venv
 .idea/
 .vscode/
+.claude/
 
 real_acct.txt

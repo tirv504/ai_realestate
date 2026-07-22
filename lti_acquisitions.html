@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LTI Property Advisors — AI Acquisitions Assistant</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a2b28;        /* deep forest ink */
+    --ink-2:#33474330;
+    --paper:#f6f4ef;      /* warm paper */
+    --card:#ffffff;
+    --line:#e4e0d6;
+    --moss:#2f6f5e;       /* primary — moss green */
+    --moss-d:#245446;
+    --clay:#c56b3f;       /* accent — clay */
+    --gold:#b8933a;
+    --muted:#6b746f;
+    --hot:#c0492f;
+    --warm:#c98a2b;
+    --nurture:#2f6f5e;
+    --cold:#8a938d;
+    --shadow:0 1px 2px rgba(26,43,40,.04),0 8px 24px rgba(26,43,40,.06);
+    --shadow-lg:0 4px 12px rgba(26,43,40,.08),0 20px 48px rgba(26,43,40,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  input,select,textarea{font-family:inherit;font-size:14px}
+  ::selection{background:var(--moss);color:#fff}
+
+  .app{display:flex;min-height:100vh}
+  /* Sidebar */
+  .side{width:236px;background:var(--ink);color:#e9ede9;display:flex;flex-direction:column;padding:0;position:sticky;top:0;height:100vh;flex-shrink:0}
+  .brand{padding:22px 20px 18px;border-bottom:1px solid #ffffff14}
+  .brand .mark{display:flex;align-items:center;gap:10px}
+  .brand .glyph{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--moss),var(--moss-d));display:grid;place-items:center;font-family:'Fraunces';font-weight:600;color:#fff;font-size:16px}
+  .brand h1{font-family:'Fraunces';font-size:16px;font-weight:600;letter-spacing:.1px;line-height:1.1}
+  .brand .tag{font-size:11px;color:#9fb0a9;margin-top:2px;letter-spacing:.3px}
+  .nav{padding:14px 12px;display:flex;flex-direction:column;gap:2px;flex:1}
+  .nav .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:#7d8c86;padding:10px 10px 6px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:9px;color:#c3cec9;font-size:13.5px;font-weight:500;transition:.15s;text-decoration:none}
+  .nav a svg{width:17px;height:17px;stroke-width:1.8}
+  .nav a:hover{background:#ffffff10;color:#fff}
+  .nav a.on{background:var(--moss);color:#fff}
+  .side-foot{padding:16px;border-top:1px solid #ffffff14;font-size:11px;color:#8b988f;line-height:1.5}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:64px;border-bottom:1px solid var(--line);background:#fbfaf7;display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:20}
+  .topbar .crumb{font-size:13px;color:var(--muted)}
+  .topbar .crumb b{color:var(--ink);font-weight:600}
+  .topbar-actions{display:flex;align-items:center;gap:12px}
+  .content{padding:26px;max-width:1180px;width:100%;margin:0 auto}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 15px;border-radius:9px;font-size:13.5px;font-weight:600;transition:.15s;white-space:nowrap}
+  .btn svg{width:16px;height:16px;stroke-width:1.9}
+  .btn-primary{background:var(--moss);color:#fff}
+  .btn-primary:hover{background:var(--moss-d)}
+  .btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:#c9c4b6;background:#fbfaf7}
+  .btn-clay{background:var(--clay);color:#fff}
+  .btn-clay:hover{filter:brightness(.94)}
+  .btn-sm{padding:7px 11px;font-size:12.5px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* Page head */
+  .phead{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;gap:16px;flex-wrap:wrap}
+  .phead h2{font-family:'Fraunces';font-size:27px;font-weight:600;letter-spacing:-.3px}
+  .phead p{color:var(--muted);font-size:14px;margin-top:3px}
+
+  /* Stat cards */
+  .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:22px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px 16px;box-shadow:var(--shadow)}
+  .stat .k{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.2px;display:flex;align-items:center;gap:6px}
+  .stat .k svg{width:14px;height:14px;stroke-width:1.9;opacity:.7}
+  .stat .v{font-family:'Fraunces';font-size:27px;font-weight:600;margin-top:8px;line-height:1}
+  .stat .sub{font-size:11px;color:var(--muted);margin-top:5px}
+  .stat.accent{background:linear-gradient(150deg,#2f6f5e,#245446);border-color:transparent;color:#fff}
+  .stat.accent .k,.stat.accent .sub{color:#c8ded6}
+  .stat.accent .k svg{opacity:.9}
+
+  /* Toolbar */
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .search{flex:1;min-width:200px;position:relative}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);stroke-width:1.9}
+  .search input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--line);border-radius:9px;background:#fff;outline:none}
+  .search input:focus{border-color:var(--moss)}
+  .filters{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{padding:8px 13px;border-radius:20px;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--muted);transition:.15s}
+  .chip:hover{border-color:#c9c4b6}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  /* Table */
+  .tablecard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  table{width:100%;border-collapse:collapse}
+  thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:600;padding:13px 16px;border-bottom:1px solid var(--line);background:#fbfaf7}
+  tbody td{padding:14px 16px;border-bottom:1px solid #efece4;font-size:13.5px;vertical-align:middle}
+  tbody tr{cursor:pointer;transition:.12s}
+  tbody tr:hover{background:#f9f7f2}
+  tbody tr:last-child td{border-bottom:none}
+  .seller{font-weight:600;color:var(--ink)}
+  .addr{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .next{color:var(--moss);font-weight:600;font-size:12.5px}
+
+  /* Status badge */
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap}
+  .badge .dot{width:6px;height:6px;border-radius:50%}
+  .b-new{background:#eef1f0;color:#4a5a54}.b-new .dot{background:#7d8c86}
+  .b-ai{background:#eaf3ef;color:#245446}.b-ai .dot{background:#2f6f5e;animation:pulse 1.6s infinite}
+  .b-resp{background:#fdf3e8;color:#a5601f}.b-resp .dot{background:#c98a2b}
+  .b-qual{background:#e9f4ee;color:#1f6b4e}.b-qual .dot{background:#2f8f63}
+  .b-follow{background:#fef0ec;color:#b1492c}.b-follow .dot{background:#c0492f}
+  .b-appt{background:#eceaf6;color:#514a86}.b-appt .dot{background:#6a5fb0}
+  .b-not{background:#f0efec;color:#8a847a}.b-not .dot{background:#a8a297}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* Score meter */
+  .score{display:flex;align-items:center;gap:9px}
+  .score .ring{position:relative;width:34px;height:34px;flex-shrink:0}
+  .score .num{font-family:'JetBrains Mono';font-size:12.5px;font-weight:600}
+  .temp{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .t-hot{color:var(--hot)}.t-warm{color:var(--warm)}.t-nurture{color:var(--nurture)}.t-cold{color:var(--cold)}
+
+  /* Modal */
+  .overlay{position:fixed;inset:0;background:rgba(26,43,40,.42);backdrop-filter:blur(3px);display:grid;place-items:center;z-index:100;padding:20px;animation:fade .2s}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal{background:var(--paper);border-radius:18px;width:100%;max-width:620px;max-height:92vh;overflow:auto;box-shadow:var(--shadow-lg);animation:rise .25s cubic-bezier(.2,.8,.2,1)}
+  @keyframes rise{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .modal-head{padding:22px 24px 6px;display:flex;justify-content:space-between;align-items:flex-start}
+  .modal-head h3{font-family:'Fraunces';font-size:21px;font-weight:600}
+  .modal-head p{color:var(--muted);font-size:13px;margin-top:3px}
+  .x{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--muted);transition:.15s}
+  .x:hover{background:#00000008;color:var(--ink)}
+  .x svg{width:18px;height:18px}
+  .form{padding:16px 24px 24px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .field{margin-bottom:13px}
+  .field.full{grid-column:1/-1}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:5px}
+  .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;outline:none;transition:.15s}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--moss);box-shadow:0 0 0 3px #2f6f5e1a}
+  .field textarea{resize:vertical;min-height:64px}
+  .form-foot{display:flex;gap:10px;justify-content:flex-end;padding-top:8px;border-top:1px solid var(--line);margin-top:6px}
+
+  /* Workspace */
+  .ws-head{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:20px 22px;margin-bottom:18px;box-shadow:var(--shadow);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .ws-head .who h2{font-family:'Fraunces';font-size:23px;font-weight:600}
+  .ws-head .who .a{color:var(--muted);font-size:13.5px;margin-top:3px;display:flex;align-items:center;gap:6px}
+  .ws-head .metrics{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+  .metric{text-align:center}
+  .metric .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600}
+  .metric .b{font-family:'Fraunces';font-size:22px;font-weight:600;margin-top:4px}
+  .rec-banner{margin-top:14px;padding:11px 15px;background:#eaf3ef;border:1px solid #cde3d9;border-radius:11px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--moss-d);font-weight:500}
+  .rec-banner svg{width:17px;height:17px;color:var(--moss);flex-shrink:0}
+
+  .tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--line)}
+  .tab{padding:11px 16px;font-size:13.5px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s}
+  .tab:hover{color:var(--ink)}
+  .tab.on{color:var(--moss);border-bottom-color:var(--moss)}
+
+  .ws-grid{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+
+  /* Chat */
+  .phone{background:var(--card);border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;height:600px}
+  .phone-head{padding:13px 16px;border-bottom:1px solid var(--line);background:#fbfaf7;display:flex;align-items:center;gap:11px}
+  .phone-head .av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--clay),#a85529);display:grid;place-items:center;color:#fff;font-weight:600;font-size:14px;font-family:'Fraunces'}
+  .phone-head .nm{font-weight:600;font-size:14px}
+  .phone-head .st{font-size:11.5px;color:var(--moss);font-weight:500;display:flex;align-items:center;gap:5px}
+  .sim-tag{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);background:#efece4;padding:4px 8px;border-radius:6px}
+  .thread{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:10px;background:#faf9f5}
+  .bubble{max-width:78%;padding:10px 13px;border-radius:15px;font-size:13.5px;line-height:1.45;position:relative;animation:pop .25s}
+  @keyframes pop{from{transform:translateY(6px)scale(.98);opacity:0}to{transform:translateY(0)scale(1);opacity:1}}
+  .bubble.ai{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px;color:var(--ink)}
+  .bubble.seller{align-self:flex-end;background:var(--moss);color:#fff;border-bottom-right-radius:5px}
+  .bubble .t{font-size:10px;margin-top:4px;opacity:.6}
+  .typing{align-self:flex-start;background:#fff;border:1px solid var(--line);padding:12px 15px;border-radius:15px;border-bottom-left-radius:5px;display:flex;gap:4px}
+  .typing span{width:7px;height:7px;border-radius:50%;background:#b8c0bb;animation:bounce 1.3s infinite}
+  .typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+  .composer{border-top:1px solid var(--line);padding:12px;background:#fff}
+  .replies{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+  .reply-opt{text-align:left;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font-size:12.5px;color:var(--ink);background:#fbfaf7;transition:.15s;line-height:1.35}
+  .reply-opt:hover{border-color:var(--moss);background:#eaf3ef}
+  .reply-opt .lead{font-weight:600;color:var(--moss);font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:2px}
+  .custom-row{display:flex;gap:8px}
+  .custom-row input{flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:9px;outline:none}
+  .custom-row input:focus{border-color:var(--moss)}
+  .send-btn{width:40px;height:38px;border-radius:9px;background:var(--moss);color:#fff;display:grid;place-items:center;flex-shrink:0}
+  .send-btn:hover{background:var(--moss-d)}
+  .chat-done{text-align:center;padding:14px;font-size:12.5px;color:var(--muted);font-style:italic}
+
+  /* Side panel cards */
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 17px;box-shadow:var(--shadow);margin-bottom:14px}
+  .panel h4{font-family:'Fraunces';font-size:15px;font-weight:600;margin-bottom:13px;display:flex;align-items:center;gap:8px}
+  .panel h4 svg{width:16px;height:16px;color:var(--moss)}
+  .qrow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #f0ede5;font-size:12.5px}
+  .qrow:last-child{border-bottom:none}
+  .qrow .ql{color:var(--muted);font-weight:500}
+  .qrow .qv{font-weight:600;text-align:right;max-width:180px}
+  .qrow .qv.empty{color:#bdc4bf;font-weight:500;font-style:italic}
+
+  .scorebox{text-align:center;padding:6px 0 4px}
+  .bigscore{font-family:'Fraunces';font-size:46px;font-weight:600;line-height:1}
+  .scorebar{height:8px;border-radius:5px;background:#eceae3;overflow:hidden;margin:14px 0 10px}
+  .scorebar .fill{height:100%;border-radius:5px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .score-why{font-size:11.5px;color:var(--muted);line-height:1.5;text-align:left;background:#faf9f5;border:1px solid #efece4;border-radius:9px;padding:10px 12px;margin-top:4px}
+  .score-why .row{display:flex;justify-content:space-between;padding:2px 0}
+  .score-why .row b{color:var(--moss);font-family:'JetBrains Mono'}
+
+  /* Analysis */
+  .analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  .acard{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px 16px;box-shadow:var(--shadow)}
+  .acard .l{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600}
+  .acard .v{font-family:'Fraunces';font-size:25px;font-weight:600;margin-top:7px}
+  .acard.hero{grid-column:1/-1;background:linear-gradient(150deg,#2f6f5e,#245446);border-color:transparent;color:#fff}
+  .acard.hero .l{color:#bcd8ce}
+  .acard.hero .v{font-size:34px;margin-top:8px}
+  .acard.hero .note{font-size:12px;color:#bcd8ce;margin-top:6px}
+  .assump{background:#faf9f5;border:1px solid #efece4;border-radius:11px;padding:14px 16px;font-size:12.5px;color:var(--muted);line-height:1.6}
+  .assump b{color:var(--ink)}
+  .disclaimer{font-size:11.5px;color:var(--muted);font-style:italic;margin-top:12px;padding:10px 13px;background:#fdf8f0;border:1px solid #f0e6d2;border-radius:9px;line-height:1.5}
+
+  /* Actions */
+  .actions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+  .act{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;transition:.15s;text-align:center}
+  .act:hover{border-color:var(--moss);background:#f9f7f2;transform:translateY(-1px)}
+  .act svg{width:22px;height:22px;color:var(--moss);stroke-width:1.7}
+  .act .nm{font-size:12.5px;font-weight:600}
+  .act.warn:hover{border-color:var(--clay)}
+  .act.warn svg{color:var(--clay)}
+
+  /* Timeline */
+  .timeline{position:relative;padding-left:6px}
+  .tl-item{display:flex;gap:13px;padding-bottom:16px;position:relative}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:'';position:absolute;left:8px;top:20px;bottom:-4px;width:1.5px;background:var(--line)}
+  .tl-item:last-child::before{display:none}
+  .tl-dot{width:17px;height:17px;border-radius:50%;background:#fff;border:2px solid var(--moss);flex-shrink:0;margin-top:2px;z-index:1}
+  .tl-dot.clay{border-color:var(--clay)}
+  .tl-body .tt{font-size:13px;font-weight:600}
+  .tl-body .td{font-size:12px;color:var(--muted);margin-top:2px}
+  .tl-body .tm{font-size:11px;color:#a8a89e;margin-top:3px}
+
+  /* Toast */
+  .toasts{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:10px}
+  .toast{background:var(--ink);color:#fff;padding:13px 17px;border-radius:11px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:11px;font-size:13.5px;font-weight:500;animation:slidein .3s cubic-bezier(.2,.8,.2,1);max-width:340px}
+  @keyframes slidein{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+  .toast svg{width:18px;height:18px;color:#7fd4a8;flex-shrink:0}
+
+  .empty{text-align:center;padding:60px 20px;color:var(--muted)}
+  .empty svg{width:44px;height:44px;color:#c9c4b6;margin-bottom:14px;stroke-width:1.5}
+  .empty h3{font-family:'Fraunces';font-size:19px;color:var(--ink);margin-bottom:6px}
+
+  .backlink{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:16px;transition:.15s}
+  .backlink:hover{color:var(--moss)}
+  .backlink svg{width:15px;height:15px}
+
+  /* Mobile */
+  .menu-btn{display:none}
+  @media(max-width:1080px){
+    .stats{grid-template-columns:repeat(3,1fr)}
+    .ws-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:760px){
+    .side{position:fixed;left:-236px;z-index:150;transition:.25s;box-shadow:var(--shadow-lg)}
+    .side.open{left:0}
+    .menu-btn{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:#fff}
+    .menu-btn svg{width:18px;height:18px}
+    .stats{grid-template-columns:1fr 1fr}
+    .grid2{grid-template-columns:1fr}
+    .analysis-grid{grid-template-columns:1fr}
+    .actions-grid{grid-template-columns:1fr 1fr}
+    .content{padding:18px}
+    .scrim{display:block;position:fixed;inset:0;background:rgba(26,43,40,.4);z-index:140}
+    .ws-head .metrics{gap:18px}
+    table{font-size:12.5px}
+    thead th:nth-child(4),tbody td:nth-child(4){display:none}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useMemo} = React;
+
+/* ---------- API ---------- */
+const API_BASE = 'http://127.0.0.1:5001';
+async function apiGet(path){
+  const r=await fetch(API_BASE+path);
+  if(!r.ok)throw new Error(`GET ${path} → ${r.status}`);
+  return r.json();
+}
+async function apiPost(path,body){
+  const r=await fetch(API_BASE+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error(`POST ${path} → ${r.status}`);
+  return r.json();
+}
+async function apiPatch(path,body){
+  const r=await fetch(API_BASE+path,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error(`PATCH ${path} → ${r.status}`);
+  return r.json();
+}
+
+/* ---------- ICONS ---------- */
+const I = {
+  grid:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>,
+  plus:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  search:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  x:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+  back:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
+  phone:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+  cal:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+  chat:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+  clock:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>,
+  check:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>,
+  checkc:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+  ban:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/></svg>,
+  spark:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3l1.9 5.8L20 10l-5.8 1.9L12 18l-1.9-5.8L4 10l5.8-1.2z"/></svg>,
+  target:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>,
+  chart:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="4" y1="20" x2="4" y2="10"/><line x1="10" y1="20" x2="10" y2="4"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="20" y2="8"/></svg>,
+  users:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>,
+  home:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+  dollar:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+  bell:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>,
+  menu:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+  clip:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>,
+  send:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
+  bolt:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+};
+
+/* SCRIPT removed — questions are now generated by Claude API per /api/leads/:id/reply */
+
+const SCORE_LABELS = {
+  interest:'Confirmed interest',
+  motivation:'Strong motivation',
+  timeline:'Timeline ≤ 30 days',
+  distress:'Vacant / distressed',
+  price:'Price negotiable',
+  appt:'Agreed to call',
+};
+
+function tempOf(s){
+  if(s>=75)return{k:'Hot',c:'t-hot',col:'#c0492f'};
+  if(s>=50)return{k:'Warm',c:'t-warm',col:'#c98a2b'};
+  if(s>=25)return{k:'Nurture',c:'t-nurture',col:'#2f6f5e'};
+  return{k:'Cold',c:'t-cold',col:'#8a938d'};
+}
+const money = n => '$'+Math.round(n).toLocaleString();
+
+/* MAO calc */
+function analyze(arv,repairs){
+  const fee=10000;
+  let mult;
+  if(arv<120000)mult=.70; else if(arv<200000)mult=.80; else if(arv<275000)mult=.83; else mult=.85;
+  const mao=arv*mult-repairs-fee;
+  return {mult,fee,mao,spread:fee,review:mao<100000};
+}
+
+const STATUS_META = {
+  'New':{cls:'b-new',label:'New'},
+  'AI Contacting':{cls:'b-ai',label:'AI Contacting'},
+  'Responded':{cls:'b-resp',label:'Responded'},
+  'Qualified':{cls:'b-qual',label:'Qualified'},
+  'Follow-Up':{cls:'b-follow',label:'Follow-Up'},
+  'Appointment Set':{cls:'b-appt',label:'Appointment Set'},
+  'Not Interested':{cls:'b-not',label:'Not Interested'},
+};
+function Badge({status}){
+  const m=STATUS_META[status]||STATUS_META['New'];
+  return <span className={'badge '+m.cls}><span className="dot"></span>{m.label}</span>;
+}
+
+/* Seed data removed — leads now loaded from /api/leads */
+
+function timeAgo(ts){
+  const s=(Date.now()-ts)/1000;
+  if(s<60)return'just now';
+  if(s<3600)return Math.floor(s/60)+'m ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+/* ================= APP ================= */
+function App(){
+  const [leads,setLeads]=useState([]);
+  const [apiReady,setApiReady]=useState(null); // null=loading, true=ok, false=error
+  const [view,setView]=useState('dashboard'); // dashboard | lead
+  const [activeId,setActiveId]=useState(null);
+  const [showAdd,setShowAdd]=useState(false);
+  const [toasts,setToasts]=useState([]);
+  const [menuOpen,setMenuOpen]=useState(false);
+
+  useEffect(()=>{
+    apiGet('/api/leads')
+      .then(data=>{setLeads(data);setApiReady(true);})
+      .catch(()=>setApiReady(false));
+  },[]);
+
+  const toast=(msg)=>{
+    const id=Math.random();
+    setToasts(t=>[...t,{id,msg}]);
+    setTimeout(()=>setToasts(t=>t.filter(x=>x.id!==id)),3200);
+  };
+
+  const active = leads.find(l=>l.id===activeId);
+
+  const openLead=(id)=>{setActiveId(id);setView('lead');window.scrollTo(0,0);};
+  const goDash=()=>{setView('dashboard');setActiveId(null);window.scrollTo(0,0);};
+
+  // updateLead: if given a full lead object (has .id), just replace in state.
+  // Otherwise PATCH the API and update state from response.
+  const updateLead=async(id,patchOrLead)=>{
+    if(patchOrLead&&patchOrLead.id===id){
+      setLeads(ls=>ls.map(l=>l.id===id?patchOrLead:l));
+      return patchOrLead;
+    }
+    const patch=typeof patchOrLead==='function'
+      ?patchOrLead(leads.find(l=>l.id===id))
+      :patchOrLead;
+    try{
+      const updated=await apiPatch(`/api/leads/${id}`,patch);
+      setLeads(ls=>ls.map(l=>l.id===id?updated:l));
+      return updated;
+    }catch(e){
+      console.error('updateLead failed:',e);
+      setLeads(ls=>ls.map(l=>l.id===id?{...l,...patch}:l));
+    }
+  };
+
+  const addLead=async(data,startAI)=>{
+    try{
+      const lead=await apiPost('/api/leads',{...data,start_ai:startAI});
+      setLeads(ls=>[lead,...ls]);
+      setShowAdd(false);
+      setActiveId(lead.id);setView('lead');window.scrollTo(0,0);
+      toast(startAI?'Lead added — AI conversation started':'Lead added to pipeline');
+    }catch(e){
+      toast('Error adding lead: '+e.message);
+    }
+  };
+
+  return (
+    <div className="app">
+      {menuOpen && <div className="scrim" onClick={()=>setMenuOpen(false)}></div>}
+      <aside className={'side'+(menuOpen?' open':'')}>
+        <div className="brand">
+          <div className="mark">
+            <div className="glyph">L</div>
+            <div>
+              <h1>LTI Property Advisors</h1>
+              <div className="tag">AI Acquisitions Assistant</div>
+            </div>
+          </div>
+        </div>
+        <nav className="nav">
+          <div className="lbl">Workspace</div>
+          <a className={view==='dashboard'?'on':''} onClick={()=>{goDash();setMenuOpen(false);}}>{I.grid} Acquisitions</a>
+          <a onClick={()=>{setShowAdd(true);setMenuOpen(false);}}>{I.plus} Add New Lead</a>
+          <a>{I.users} Sellers</a>
+          <a>{I.chart} Pipeline</a>
+          <div className="lbl">Automation</div>
+          <a>{I.spark} AI Conversations</a>
+          <a>{I.bell} Follow-Ups</a>
+        </nav>
+        <div className="side-foot">
+          SQLite + Claude AI backend.<br/>Texts queued for manual send.
+        </div>
+      </aside>
+
+      <div className="main">
+        <div className="topbar">
+          <div style={{display:'flex',alignItems:'center',gap:14}}>
+            <button className="menu-btn" onClick={()=>setMenuOpen(true)}>{I.menu}</button>
+            <div className="crumb">
+              {view==='dashboard'
+                ? <b>Acquisitions Dashboard</b>
+                : <><span onClick={goDash} style={{cursor:'pointer'}}>Acquisitions</span> / <b>{active?active.first+' '+active.last:'Lead'}</b></>}
+            </div>
+          </div>
+          <div className="topbar-actions">
+            <button className="btn btn-primary btn-sm" onClick={()=>setShowAdd(true)}>{I.plus} Add New Lead</button>
+          </div>
+        </div>
+
+        <div className="content">
+          {apiReady===false&&(
+            <div style={{background:'#fdf3e8',border:'1px solid #f0d8b0',borderRadius:11,padding:'12px 16px',marginBottom:16,fontSize:13,color:'#a05a1a',display:'flex',gap:10,alignItems:'center'}}>
+              {I.bolt}<b>Backend not running.</b>&nbsp;Start the server:&nbsp;<code style={{background:'#fff',padding:'2px 6px',borderRadius:5,border:'1px solid #e8d8b8'}}>python acquisitions_api.py</code>
+            </div>
+          )}
+          {apiReady===null&&(
+            <div style={{textAlign:'center',padding:'60px 0',color:'var(--muted)'}}>Connecting to backend…</div>
+          )}
+          {apiReady===true&&(view==='dashboard'
+            ? <Dashboard leads={leads} onOpen={openLead} onAdd={()=>setShowAdd(true)} />
+            : active
+              ? <Workspace lead={active} updateLead={updateLead} onBack={goDash} toast={toast}/>
+              : <div className="empty"><h3>Lead not found</h3></div>)}
+        </div>
+      </div>
+
+      {showAdd && <AddLead onClose={()=>setShowAdd(false)} onSave={addLead} />}
+
+      <div className="toasts">
+        {toasts.map(t=><div className="toast" key={t.id}>{I.checkc}{t.msg}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- DASHBOARD ---------- */
+function Dashboard({leads,onOpen,onAdd}){
+  const [q,setQ]=useState('');
+  const [filter,setFilter]=useState('All');
+
+  const stats=useMemo(()=>{
+    const active=leads.filter(l=>l.status==='AI Contacting').length;
+    const qualified=leads.filter(l=>l.status==='Qualified').length;
+    const appts=leads.filter(l=>l.status==='Appointment Set').length;
+    const follow=leads.filter(l=>l.status==='Follow-Up').length;
+    const pipeline=leads.filter(l=>!['Not Interested'].includes(l.status))
+      .reduce((s,l)=>{const a=analyze(l.arv,l.repairs);return s+(a.mao>0?a.mao:0);},0);
+    return {total:leads.length,active,qualified,appts,follow,pipeline};
+  },[leads]);
+
+  const statuses=['All','New','AI Contacting','Responded','Qualified','Follow-Up','Appointment Set','Not Interested'];
+  const filtered=leads.filter(l=>{
+    const matchQ=(l.first+' '+l.last+' '+l.street+' '+l.city).toLowerCase().includes(q.toLowerCase());
+    const matchF=filter==='All'||l.status===filter;
+    return matchQ&&matchF;
+  });
+
+  return (
+    <div>
+      <div className="phead">
+        <div>
+          <h2>Acquisitions</h2>
+          <p>Turn raw property leads into qualified seller opportunities — automatically.</p>
+        </div>
+        <button className="btn btn-primary" onClick={onAdd}>{I.plus} Add New Lead</button>
+      </div>
+
+      <div className="stats">
+        <div className="stat">
+          <div className="k">{I.users} Total Leads</div>
+          <div className="v">{stats.total}</div>
+          <div className="sub">across all sources</div>
+        </div>
+        <div className="stat accent">
+          <div className="k">{I.spark} Active AI Chats</div>
+          <div className="v">{stats.active}</div>
+          <div className="sub">qualifying now</div>
+        </div>
+        <div className="stat">
+          <div className="k">{I.check} Qualified</div>
+          <div className="v">{stats.qualified}</div>
+          <div className="sub">ready to call</div>
+        </div>
+        <div className="stat">
+          <div className="k">{I.cal} Appointments</div>
+          <div className="v">{stats.appts}</div>
+          <div className="sub">booked calls</div>
+        </div>
+        <div className="stat">
+          <div className="k">{I.bell} Follow-Ups Due</div>
+          <div className="v">{stats.follow}</div>
+          <div className="sub">need a nudge</div>
+        </div>
+        <div className="stat">
+          <div className="k">{I.dollar} Pipeline Value</div>
+          <div className="v">{money(stats.pipeline)}</div>
+          <div className="sub">est. offer capacity</div>
+        </div>
+      </div>
+
+      <div className="toolbar">
+        <div className="search">
+          {I.search}
+          <input placeholder="Search sellers, addresses, cities…" value={q} onChange={e=>setQ(e.target.value)} />
+        </div>
+        <div className="filters">
+          {statuses.map(s=><button key={s} className={'chip'+(filter===s?' on':'')} onClick={()=>setFilter(s)}>{s}</button>)}
+        </div>
+      </div>
+
+      <div className="tablecard">
+        {filtered.length===0
+          ? <div className="empty">{I.search}<h3>No leads match</h3><p>Try a different search or filter.</p></div>
+          : <table>
+              <thead><tr>
+                <th>Seller & Property</th><th>Status</th><th>Motivation</th><th>Last Contact</th><th>Recommended Next Action</th>
+              </tr></thead>
+              <tbody>
+                {filtered.map(l=>{
+                  const t=tempOf(l.score);
+                  return (
+                    <tr key={l.id} onClick={()=>onOpen(l.id)}>
+                      <td>
+                        <div className="seller">{l.first} {l.last}</div>
+                        <div className="addr">{l.street}, {l.city} {l.zip}</div>
+                      </td>
+                      <td><Badge status={l.status}/></td>
+                      <td>
+                        <div className="score">
+                          <ScoreRing score={l.score}/>
+                          <div>
+                            <div className="num">{l.score}</div>
+                            <div className={'temp '+t.c}>{t.k}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{color:'var(--muted)',fontSize:12.5}}>{timeAgo(l.lastContact)}</td>
+                      <td><span className="next">{recAction(l).label} →</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>}
+      </div>
+    </div>
+  );
+}
+
+function ScoreRing({score,size=34}){
+  const t=tempOf(score);
+  const r=(size-6)/2, c=2*Math.PI*r, off=c-(score/100)*c;
+  return (
+    <div className="ring" style={{width:size,height:size}}>
+      <svg width={size} height={size} style={{transform:'rotate(-90deg)'}}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#eceae3" strokeWidth="3.5"/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={t.col} strokeWidth="3.5"
+          strokeDasharray={c} strokeDashoffset={off} strokeLinecap="round" style={{transition:'stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1)'}}/>
+      </svg>
+    </div>
+  );
+}
+
+function recAction(l){
+  if(l.status==='Not Interested')return{label:'Archive',key:'archive'};
+  if(l.status==='Appointment Set')return{label:'Prep for call',key:'prep'};
+  if(l.status==='Qualified')return{label:'Call seller',key:'call'};
+  if(l.status==='Follow-Up')return{label:'Send follow-up',key:'follow'};
+  if(l.status==='AI Contacting')return{label:'Continue AI chat',key:'chat'};
+  if(l.status==='Responded')return{label:'Continue AI chat',key:'chat'};
+  return{label:'Start AI conversation',key:'chat'};
+}
+
+/* ---------- ADD LEAD ---------- */
+function AddLead({onClose,onSave}){
+  const [f,setF]=useState({first:'',last:'',phone:'',street:'',city:'Houston',state:'TX',zip:'',ptype:'Single Family',arv:'',repairs:'',asking:'',source:'Direct',notes:''});
+  const set=(k,v)=>setF(s=>({...s,[k]:v}));
+  const valid=f.first&&f.last&&f.street&&f.arv;
+
+  const submit=(startAI)=>{
+    if(!valid)return;
+    onSave({
+      first:f.first,last:f.last,phone:f.phone||'(713) 555-0100',street:f.street,city:f.city,state:f.state,zip:f.zip||'77000',
+      ptype:f.ptype,arv:Number(f.arv)||0,repairs:Number(f.repairs)||0,asking:Number(f.asking)||0,source:f.source,notes:f.notes,
+    },startAI);
+  };
+
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <div className="modal-head">
+          <div>
+            <h3>Add New Lead</h3>
+            <p>Enter the seller and property details to start.</p>
+          </div>
+          <button className="x" onClick={onClose}>{I.x}</button>
+        </div>
+        <div className="form">
+          <div className="grid2">
+            <div className="field"><label>Seller First Name *</label><input value={f.first} onChange={e=>set('first',e.target.value)} placeholder="Marcus"/></div>
+            <div className="field"><label>Seller Last Name *</label><input value={f.last} onChange={e=>set('last',e.target.value)} placeholder="Johnson"/></div>
+            <div className="field"><label>Phone Number</label><input value={f.phone} onChange={e=>set('phone',e.target.value)} placeholder="(713) 555-0142"/></div>
+            <div className="field"><label>Lead Source</label>
+              <select value={f.source} onChange={e=>set('source',e.target.value)}>
+                <option>Direct</option><option>Inherited list</option><option>Pre-foreclosure</option><option>Absentee owner</option><option>Tax delinquent</option><option>Driving for dollars</option><option>Cold list</option>
+              </select>
+            </div>
+            <div className="field full"><label>Property Address *</label><input value={f.street} onChange={e=>set('street',e.target.value)} placeholder="7814 Oak Meadow Drive"/></div>
+            <div className="field"><label>City</label><input value={f.city} onChange={e=>set('city',e.target.value)}/></div>
+            <div className="field"><label>State</label><input value={f.state} onChange={e=>set('state',e.target.value)}/></div>
+            <div className="field"><label>ZIP Code</label><input value={f.zip} onChange={e=>set('zip',e.target.value)} placeholder="77071"/></div>
+            <div className="field"><label>Property Type</label>
+              <select value={f.ptype} onChange={e=>set('ptype',e.target.value)}>
+                <option>Single Family</option><option>Duplex</option><option>Townhome</option><option>Condo</option><option>Multi-Family</option><option>Land</option>
+              </select>
+            </div>
+            <div className="field"><label>Estimated Value / ARV *</label><input type="number" value={f.arv} onChange={e=>set('arv',e.target.value)} placeholder="245000"/></div>
+            <div className="field"><label>Estimated Repair Cost</label><input type="number" value={f.repairs} onChange={e=>set('repairs',e.target.value)} placeholder="52000"/></div>
+            <div className="field"><label>Seller Asking Price</label><input type="number" value={f.asking} onChange={e=>set('asking',e.target.value)} placeholder="145000"/></div>
+            <div className="field full"><label>Notes</label><textarea value={f.notes} onChange={e=>set('notes',e.target.value)} placeholder="Situation, condition, motivation…"/></div>
+          </div>
+          <div className="form-foot">
+            <button className="btn btn-ghost" onClick={()=>submit(false)} disabled={!valid}>Save Lead</button>
+            <button className="btn btn-primary" onClick={()=>submit(true)} disabled={!valid}>{I.spark} Save & Start AI Conversation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- WORKSPACE ---------- */
+function Workspace({lead,updateLead,onBack,toast}){
+  const [tab,setTab]=useState('conversation');
+  const t=tempOf(lead.score);
+  const a=analyze(lead.arv,lead.repairs);
+  const rec=recAction(lead);
+
+  const doAction=(key,label,newStatus,tlText)=>{
+    updateLead(lead.id,{
+      status:newStatus||lead.status,
+      lastContact:Date.now(),
+      timeline:[...lead.timeline,{t:tlText||label,d:'Action taken from workspace',at:Date.now(),clay:key==='qualify'||key==='appt'}],
+    });
+    toast(label+' — lead updated');
+  };
+
+  return (
+    <div>
+      <a className="backlink" onClick={onBack}>{I.back} Back to Acquisitions</a>
+
+      <div className="ws-head">
+        <div className="who">
+          <h2>{lead.first} {lead.last}</h2>
+          <div className="a">{I.home} {lead.street}, {lead.city}, {lead.state} {lead.zip}</div>
+          <div style={{marginTop:10}}><Badge status={lead.status}/></div>
+        </div>
+        <div className="metrics">
+          <div className="metric">
+            <div className="l">Motivation</div>
+            <div className="b" style={{color:t.col}}>{lead.score}</div>
+            <div className={'temp '+t.c} style={{marginTop:2}}>{t.k}</div>
+          </div>
+          <div className="metric">
+            <div className="l">AI Confidence</div>
+            <div className="b">{lead.done?'High':lead.convo.length>2?'Med':'Low'}</div>
+          </div>
+          <div className="metric">
+            <div className="l">Est. MAO</div>
+            <div className="b">{a.mao>0?money(a.mao):'—'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="rec-banner">{I.target}<b style={{fontWeight:700,marginRight:4}}>Recommended:</b> {recBlurb(lead,rec)}</div>
+
+      <div className="tabs" style={{marginTop:18}}>
+        {['conversation','qualification','analysis','activity'].map(x=>
+          <button key={x} className={'tab'+(tab===x?' on':'')} onClick={()=>setTab(x)}>
+            {x==='conversation'?'Conversation':x==='qualification'?'Qualification':x==='analysis'?'Property Analysis':'Activity'}
+          </button>)}
+      </div>
+
+      {tab==='conversation' && <ConvoTab lead={lead} updateLead={updateLead} toast={toast}/>}
+      {tab==='qualification' && <QualTab lead={lead}/>}
+      {tab==='analysis' && <AnalysisTab lead={lead} a={a}/>}
+      {tab==='activity' && <ActivityTab lead={lead}/>}
+
+      {tab!=='conversation' &&
+        <div className="panel" style={{marginTop:18}}>
+          <h4>{I.bolt} Recommended Actions</h4>
+          <ActionsGrid lead={lead} doAction={doAction}/>
+        </div>}
+    </div>
+  );
+}
+
+function recBlurb(lead,rec){
+  const map={
+    call:`Score is ${lead.score} (${tempOf(lead.score).k}). Call ${lead.first} now to lock the acquisition.`,
+    chat:`Keep the AI conversation going to finish qualifying ${lead.first}.`,
+    follow:`${lead.first} went quiet — send a follow-up to re-engage.`,
+    prep:`Call is booked. Review the property analysis before you dial.`,
+    archive:`${lead.first} declined. Archive and keep the list clean.`,
+    prep2:'',
+  };
+  return map[rec.key]||`Continue working this lead.`;
+}
+
+/* ---- Conversation tab (API-driven) ---- */
+function ConvoTab({lead,updateLead,toast}){
+  const [loading,setLoading]=useState(false);
+  const [custom,setCustom]=useState('');
+  const [suggestions,setSuggestions]=useState([]);
+  const threadRef=useRef(null);
+  const finished=lead.done;
+
+  useEffect(()=>{
+    if(threadRef.current)threadRef.current.scrollTop=threadRef.current.scrollHeight;
+  },[lead.convo,loading]);
+
+  const sendReply=async(text)=>{
+    if(!text.trim()||loading||finished)return;
+    setLoading(true);
+    setSuggestions([]);
+    try{
+      const result=await apiPost(`/api/leads/${lead.id}/reply`,{text:text.trim()});
+      updateLead(lead.id,result.lead);
+      setSuggestions(result.suggested_replies||[]);
+      toast('Reply processed');
+    }catch(e){
+      toast('Error: '+e.message);
+    }finally{
+      setLoading(false);
+      setCustom('');
+    }
+  };
+
+  return (
+    <div className="ws-grid">
+      <div className="phone">
+        <div className="phone-head">
+          <div className="av">{lead.first[0]}{lead.last[0]}</div>
+          <div>
+            <div className="nm">{lead.first} {lead.last}</div>
+            <div className="st"><span style={{width:6,height:6,borderRadius:'50%',background:'#2f8f63',display:'inline-block'}}></span>{lead.phone||'no phone'}</div>
+          </div>
+          <div className="sim-tag">Manual Mode</div>
+        </div>
+
+        <div className="thread" ref={threadRef}>
+          {lead.convo.map((m,i)=>(
+            <div key={i} className={'bubble '+(m.who==='ai'?'ai':'seller')}>
+              {m.text}
+              <div className="t">{new Date(m.t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</div>
+            </div>
+          ))}
+          {loading&&<div className="typing"><span></span><span></span><span></span></div>}
+        </div>
+
+        <div className="composer">
+          {finished
+            ?<div className="chat-done">Conversation complete · qualification captured →</div>
+            :loading
+              ?<div className="chat-done">AI is processing reply…</div>
+              :<>
+                {suggestions.length>0&&(
+                  <div className="replies">
+                    {suggestions.map((s,i)=>(
+                      <button key={i} className="reply-opt" onClick={()=>sendReply(s)}>
+                        <span className="lead">{lead.first} might say</span>{s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="custom-row">
+                  <input placeholder="Enter seller's actual reply or test a response…" value={custom}
+                    onChange={e=>setCustom(e.target.value)}
+                    onKeyDown={e=>e.key==='Enter'&&sendReply(custom)}/>
+                  <button className="send-btn" onClick={()=>sendReply(custom)}>{I.send}</button>
+                </div>
+              </>}
+        </div>
+      </div>
+
+      <div>
+        <ScorePanel lead={lead}/>
+        <QueuePanel key={lead.lastContact} leadId={lead.id} phone={lead.phone}/>
+        <div className="panel">
+          <h4>{I.bolt} Recommended Actions</h4>
+          <ActionsGrid lead={lead} doAction={(k,label,st,tl)=>{
+            updateLead(lead.id,{
+              status:st||lead.status,
+              lastContact:Date.now(),
+              timeline:[...lead.timeline,{t:tl||label,d:'Action taken from workspace',at:Date.now(),clay:k==='qualify'||k==='appt'}],
+            });
+            toast(label+' — lead updated');
+          }}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---- Queue panel — shows pending outbound texts for manual sending ---- */
+function QueuePanel({leadId,phone}){
+  const [pending,setPending]=useState([]);
+  useEffect(()=>{
+    apiGet(`/api/queue?lead_id=${leadId}&status=pending`)
+      .then(setPending)
+      .catch(()=>{});
+  },[leadId]);
+
+  const markSent=(id)=>{
+    apiPatch(`/api/queue/${id}`,{status:'sent'})
+      .then(()=>setPending(p=>p.filter(m=>m.id!==id)))
+      .catch(()=>{});
+  };
+
+  const outbound=pending.filter(m=>m.direction==='outbound');
+  if(!outbound.length)return null;
+
+  return(
+    <div className="panel" style={{marginBottom:14}}>
+      <h4 style={{marginBottom:10}}>{I.send} Send to Seller ({outbound.length} pending)</h4>
+      {outbound.slice(0,3).map(m=>(
+        <div key={m.id} style={{marginBottom:10}}>
+          <div style={{fontSize:12.5,lineHeight:1.5,color:'var(--ink)',padding:'9px 11px',background:'#eaf3ef',border:'1px solid #cde3d9',borderRadius:9,marginBottom:6}}>{m.body}</div>
+          <button className="btn btn-ghost btn-sm" style={{width:'100%',justifyContent:'center'}} onClick={()=>markSent(m.id)}>
+            {I.check} Mark sent{phone?` to ${phone}`:''}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ScorePanel({lead}){
+  const t=tempOf(lead.score);
+  const parts=Object.entries(lead.scoreParts||{}).filter(([k,v])=>v>0);
+  return (
+    <div className="panel">
+      <h4>{I.target} Motivation Score</h4>
+      <div className="scorebox">
+        <div className="bigscore" style={{color:t.col}}>{lead.score}<span style={{fontSize:20,color:'var(--muted)'}}>/100</span></div>
+        <div className={'temp '+t.c} style={{fontSize:13,marginTop:2}}>{t.k} Lead</div>
+      </div>
+      <div className="scorebar"><div className="fill" style={{width:lead.score+'%',background:t.col}}></div></div>
+      {parts.length>0
+        ? <div className="score-why">
+            {parts.map(([k,v])=>(
+              <div className="row" key={k}><span>{SCORE_LABELS[k]||k}</span><b>+{v}</b></div>
+            ))}
+          </div>
+        : <div className="score-why">No positive signals captured yet. Work the conversation to build the score.</div>}
+    </div>
+  );
+}
+
+/* ---- Qualification tab ---- */
+function QualTab({lead}){
+  const rows=[
+    ['Interest in selling',lead.qual.interest],
+    ['Primary motivation',lead.qual.motivation],
+    ['Desired timeline',lead.qual.timeline],
+    ['Occupancy',lead.qual.occupancy],
+    ['Property condition',lead.qual.condition],
+    ['Mortgage / debt',lead.qual.debt],
+    ['Asking price',lead.qual.price],
+    ['Preferred callback',lead.qual.callback],
+  ];
+  const missing=rows.filter(r=>!r[1]).map(r=>r[0]);
+  return (
+    <div className="ws-grid">
+      <div className="panel">
+        <h4>{I.clip} Qualification Summary</h4>
+        {rows.map(([l,v])=>(
+          <div className="qrow" key={l}>
+            <span className="ql">{l}</span>
+            <span className={'qv'+(v?'':' empty')}>{v||'Not captured'}</span>
+          </div>
+        ))}
+      </div>
+      <div>
+        <ScorePanel lead={lead}/>
+        <div className="panel">
+          <h4>{I.search} Missing Information</h4>
+          {missing.length===0
+            ? <div style={{fontSize:12.5,color:'var(--moss)',fontWeight:600,display:'flex',alignItems:'center',gap:8}}>{I.check} All key fields captured.</div>
+            : <div style={{fontSize:12.5,color:'var(--muted)',lineHeight:1.7}}>
+                {missing.map(m=><div key={m}>· {m}</div>)}
+              </div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---- Analysis tab ---- */
+function AnalysisTab({lead,a}){
+  return (
+    <div>
+      <div className="analysis-grid">
+        <div className="acard hero">
+          <div className="l">Estimated Maximum Allowable Offer (MAO)</div>
+          <div className="v">{a.mao>0?money(a.mao):'Below threshold'}</div>
+          <div className="note">{a.review?'⚠ Manual review recommended — MAO under $100,000':`Based on ${Math.round(a.mult*100)}% of ARV, less repairs and a ${money(a.fee)} wholesale fee`}</div>
+        </div>
+        <div className="acard"><div className="l">Estimated ARV</div><div className="v">{money(lead.arv)}</div></div>
+        <div className="acard"><div className="l">Estimated Repairs</div><div className="v">{money(lead.repairs)}</div></div>
+        <div className="acard"><div className="l">Seller Asking</div><div className="v">{lead.asking?money(lead.asking):'—'}</div></div>
+        <div className="acard"><div className="l">Potential Wholesale Spread</div><div className="v" style={{color:'var(--moss)'}}>{money(a.spread)}</div></div>
+      </div>
+      <div className="assump">
+        <b>Assumptions & confidence.</b> Purchase multiplier applied at {Math.round(a.mult*100)}% for this ARV band. Wholesale fee fixed at {money(a.fee)}. Repair figure is the investor's estimate, not an inspection. Data confidence: <b>{lead.done?'Moderate–High':'Low'}</b> — {lead.done?'qualification complete.':'finish the conversation to firm up condition and price.'}
+        {lead.asking>0 && a.mao>0 && <><br/><br/><b>Seller gap:</b> asking {money(lead.asking)} vs. MAO {money(a.mao)} — {lead.asking<=a.mao?'asking is at or below your max, strong spread.':'asking is above MAO; negotiation or creative terms may be needed.'}</>}
+      </div>
+      <div className="disclaimer">This is an illustrative acquisition estimate generated for demonstration — not an appraisal, a guaranteed offer, or financial advice. Verify ARV, repairs, and title before making any offer.</div>
+    </div>
+  );
+}
+
+/* ---- Activity tab ---- */
+function ActivityTab({lead}){
+  const items=[...lead.timeline].reverse();
+  return (
+    <div className="panel">
+      <h4>{I.clock} Activity Timeline</h4>
+      <div className="timeline">
+        {items.map((it,i)=>(
+          <div className="tl-item" key={i}>
+            <div className={'tl-dot'+(it.clay?' clay':'')}></div>
+            <div className="tl-body">
+              <div className="tt">{it.t}</div>
+              {it.d && <div className="td">{it.d}</div>}
+              <div className="tm">{new Date(it.at).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---- Actions grid ---- */
+function ActionsGrid({lead,doAction}){
+  return (
+    <div className="actions-grid">
+      <button className="act" onClick={()=>doAction('call','Call logged','Qualified','Call initiated with seller')}>{I.phone}<span className="nm">Call Seller</span></button>
+      <button className="act" onClick={()=>doAction('appt','Appointment booked','Appointment Set','Appointment booked')}>{I.cal}<span className="nm">Book Appointment</span></button>
+      <button className="act" onClick={()=>doAction('follow','Follow-up scheduled','Follow-Up','Follow-up scheduled')}>{I.clock}<span className="nm">Schedule Follow-Up</span></button>
+      <button className="act" onClick={()=>doAction('qualify','Marked qualified','Qualified','Marked Qualified')}>{I.check}<span className="nm">Mark Qualified</span></button>
+      <button className="act" onClick={()=>doAction('chat','Continuing AI chat',null,'Resumed AI conversation')}>{I.chat}<span className="nm">Continue AI Chat</span></button>
+      <button className="act warn" onClick={()=>doAction('not','Marked not interested','Not Interested','Marked Not Interested')}>{I.ban}<span className="nm">Not Interested</span></button>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
