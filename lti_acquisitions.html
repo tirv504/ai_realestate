@@ -308,6 +308,11 @@ async function apiPatch(path,body){
   if(!r.ok)throw new Error(`PATCH ${path} → ${r.status}`);
   return r.json();
 }
+async function apiDelete(path){
+  const r=await fetch(API_BASE+path,{method:'DELETE'});
+  if(!r.ok)throw new Error(`DELETE ${path} → ${r.status}`);
+  return r.json();
+}
 
 /* ---------- ICONS ---------- */
 const I = {
@@ -435,6 +440,17 @@ function App(){
     }
   };
 
+  const deleteLead=async(id)=>{
+    try{
+      await apiDelete(`/api/leads/${id}`);
+      setLeads(ls=>ls.filter(l=>l.id!==id));
+      goDash();
+      toast('Lead deleted');
+    }catch(e){
+      toast('Error deleting lead: '+e.message);
+    }
+  };
+
   const addLead=async(data,startAI)=>{
     try{
       const lead=await apiPost('/api/leads',{...data,start_ai:startAI});
@@ -502,7 +518,7 @@ function App(){
           {apiReady===true&&(view==='dashboard'
             ? <Dashboard leads={leads} onOpen={openLead} onAdd={()=>setShowAdd(true)} />
             : active
-              ? <Workspace lead={active} updateLead={updateLead} onBack={goDash} toast={toast}/>
+              ? <Workspace lead={active} updateLead={updateLead} onBack={goDash} onDelete={deleteLead} toast={toast}/>
               : <div className="empty"><h3>Lead not found</h3></div>)}
         </div>
       </div>
@@ -712,7 +728,7 @@ function AddLead({onClose,onSave}){
 }
 
 /* ---------- WORKSPACE ---------- */
-function Workspace({lead,updateLead,onBack,toast}){
+function Workspace({lead,updateLead,onBack,onDelete,toast}){
   const [tab,setTab]=useState('conversation');
   const t=tempOf(lead.score);
   const a=analyze(lead.arv,lead.repairs);
@@ -729,7 +745,13 @@ function Workspace({lead,updateLead,onBack,toast}){
 
   return (
     <div>
-      <a className="backlink" onClick={onBack}>{I.back} Back to Acquisitions</a>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+        <a className="backlink" style={{marginBottom:0}} onClick={onBack}>{I.back} Back to Acquisitions</a>
+        <button className="btn btn-sm" style={{background:'#fdf0ec',color:'#b1492c',border:'1px solid #f0d0c8'}}
+          onClick={()=>{if(window.confirm(`Delete ${lead.first} ${lead.last}? This cannot be undone.`))onDelete(lead.id);}}>
+          {I.ban} Delete Lead
+        </button>
+      </div>
 
       <div className="ws-head">
         <div className="who">

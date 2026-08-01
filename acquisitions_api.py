@@ -412,6 +412,17 @@ def patch_lead(lead_id):
     return jsonify(row_to_dict(row))
 
 
+@app.route("/api/leads/<lead_id>", methods=["DELETE"])
+def delete_lead(lead_id):
+    db = get_db()
+    if not db.execute("SELECT id FROM leads WHERE id=?", (lead_id,)).fetchone():
+        return jsonify({"error": "Not found"}), 404
+    db.execute("DELETE FROM message_queue WHERE lead_id=?", (lead_id,))
+    db.execute("DELETE FROM leads WHERE id=?", (lead_id,))
+    db.commit()
+    return jsonify({"deleted": lead_id})
+
+
 # ---------------------------------------------------------------------------
 # Routes — AI conversation
 # ---------------------------------------------------------------------------
