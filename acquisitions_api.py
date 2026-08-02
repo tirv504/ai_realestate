@@ -176,40 +176,39 @@ QUAL_FIELD_ORDER = ["interest", "motivation", "timeline", "occupancy", "conditio
 
 EXTRACT_SYSTEM = """\
 You qualify real estate seller leads via SMS for LTI Property Advisors in Houston.
-Given the seller's reply, extract qualification data and determine next steps.
+Your job: read the seller's reply and extract every qualification field you can from it.
 
-Qualification fields:
+Qualification fields and accepted values:
   interest   -- "Yes — actively considering" | "Open to the right offer" | "Not interested"
-  motivation -- "Inherited — wants out" | "Repairs are overwhelming" | "Casually exploring" | or free text
-  timeline   -- "Within 30 days" | "2–3 months" | "Flexible / no rush" | or free text
+  motivation -- "Inherited — wants out" | "Repairs are overwhelming" | "Casually exploring" | or short free text
+  timeline   -- "Within 30 days" | "2-3 months" | "Flexible / no rush" | or short free text
   occupancy  -- "Vacant" | "Tenant-occupied" | "Owner-occupied"
-  condition  -- "Major repairs needed" | "Light / cosmetic" | "Move-in ready" | or free text
-  debt       -- "Owned free & clear" | "Mortgage remaining" | "Unsure of balance" | or free text
-  price      -- "Flexible / negotiable" | a dollar amount | "Wants top dollar"
-  callback   -- when they said they're available, or "Prefers text only"
+  condition  -- "Major repairs needed" | "Light / cosmetic" | "Move-in ready" | or short free text
+  debt       -- "Owned free & clear" | "Mortgage remaining" | "Unsure of balance" | or short free text
+  price      -- "Flexible / negotiable" | dollar amount as string | "Wants top dollar"
+  callback   -- when they're available for a call, or "Prefers text only"
 
-Score contribution ranges (set to 0 if a field doesn't apply yet):
-  interest:   20 (Yes=20, Open=14, No=0)
-  motivation: 20 (Inherited/urgent=20, Repairs overwhelming=18, Casual=6)
-  timeline:   20 (≤30 days=20, 2–3 months=10, Flexible=3)
-  distress:   15 (Vacant=15, Tenant=6, Owner=2)
-  price:      15 (Flexible=15, Specific but reasonable=8, Wants top dollar=2)
-  appt:       10 (Agreed to call=10, Text only=0)
+Scoring (only score fields the seller actually addressed in this reply):
+  interest:   20 pts (Yes=20, Open to offer=14, Not interested=0)
+  motivation: 20 pts (Inherited/urgent=20, Repairs overwhelming=18, Casual=6)
+  timeline:   20 pts (Within 30 days=20, 2-3 months=10, Flexible=3)
+  distress:   15 pts (Vacant=15, Tenant-occupied=6, Owner-occupied=2)
+  price:      15 pts (Flexible/negotiable=15, Specific but reasonable=8, Wants top dollar=2)
+  appt:       10 pts (Agreed to call=10, Text only=0)
 
-Return ONLY valid JSON — no markdown, no explanation:
-{
-  "field_updates": {"<field>": "<value>"},
-  "score_updates": {"<key>": <int>},
-  "not_interested": <bool>,
-  "next_field": "<motivation|timeline|occupancy|condition|debt|price|callback|done>",
-  "suggested_replies": ["<seller reply 1>", "<reply 2>", "<reply 3>"]
-}
+IMPORTANT rules:
+- field_updates MUST include every field you can extract from the seller's reply — do not leave it empty if the reply contains qual data
+- If the seller says "Yeah I might be interested" → field_updates includes interest="Open to the right offer"
+- If the seller mentions vacant, no one living there → occupancy="Vacant"
+- If the seller mentions needs work, repairs, in bad shape → condition="Major repairs needed"
+- score_updates must match field_updates (score every field you extracted)
+- next_field = the next uncaptured field from [interest, motivation, timeline, occupancy, condition, debt, price, callback] — pick the most important one not yet captured
+- next_field = "done" ONLY when all 8 fields have been captured
+- not_interested = true only on a clear hard decline ("not selling", "already listed with agent", "no thanks", "not interested")
+- suggested_replies: 3 realistic short replies the SELLER might text back (for operator quick-select testing)
 
-Rules:
-- Only include score_updates keys you can confidently score from this reply
-- next_field = "done" when all 8 fields are captured OR seller clearly declined
-- not_interested = true only on a clear decline ("no thanks", "not selling", "already listed", etc.)
-- suggested_replies: 3 realistic short responses the seller might send (for operator quick-select testing)
+Return ONLY valid JSON with NO markdown code fences, NO explanation, NO extra text:
+{"field_updates":{"interest":"Open to the right offer","occupancy":"Vacant"},"score_updates":{"interest":14,"distress":15},"not_interested":false,"next_field":"motivation","suggested_replies":["I inherited it from my dad","It needs a lot of work","I just want a fair price"]}
 """
 
 QUESTION_SYSTEM = """\
@@ -248,20 +247,27 @@ def call_claude_extract(seller_reply: str, context: dict) -> dict:
         messages=[{"role": "user", "content": payload}],
     )
     raw = resp.content[0].text.strip()
+    # Strip markdown code fences if present (Claude sometimes wraps JSON in ```json...```)
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[-1]
+        raw = raw.rsplit("```", 1)[0].strip()
+    print(f"[EXTRACT] raw response: {raw[:600]}")
     try:
         data = json.loads(raw)
-        return {
+        result = {
             "field_updates":     data.get("field_updates", {}),
             "score_updates":     data.get("score_updates", {}),
             "not_interested":    bool(data.get("not_interested", False)),
             "next_field":        str(data.get("next_field", "done")),
             "suggested_replies": list(data.get("suggested_replies", []))[:3],
         }
+        print(f"[EXTRACT] field_updates={result['field_updates']} score_updates={result['score_updates']} next_field={result['next_field']}")
+        return result
     except (json.JSONDecodeError, KeyError, TypeError):
         print(f"[WARN] Claude extract returned non-JSON: {raw!r}")
         return {
             "field_updates": {}, "score_updates": {},
-            "not_interested": False, "next_field": "done",
+            "not_interested": False, "next_field": "callback",
             "suggested_replies": [],
         }
 
