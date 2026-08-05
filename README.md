@@ -1,43 +1,84 @@
-# Houston Pre-Foreclosure AI Pipeline
+# LTI Property Advisors — AI Real Estate Tools
 
-> An end-to-end Python automation stack for identifying, contacting, and scoring pre-foreclosure leads in Harris County, Texas. Built for real estate wholesalers who want to move faster than everyone else at the courthouse steps.
+> An end-to-end Python + AI stack for sourcing, contacting, and qualifying motivated seller leads in Houston, Texas. Built for real estate wholesalers who want to move faster than everyone else.
 
 ---
 
-## Pipeline Overview
+## System Overview
 
 ```
-Harris County Clerk                  Your Phone / CRM
+Harris County Clerk                   Seller's Phone
        │                                    │
        ▼                                    ▼
-scrape_foreclosures.py          responder.py (Flask)
-  • Playwright browser           • Twilio SMS webhook
-  • FRCL filing scrape           • Claude classifies reply
-  • PDF download + OCR           • Auto-responds to seller
-  • Name + address extract       • Telegram alert if HOT
-  • CSV export                         │
-       │                               │
-       ▼                               │
-BatchSkipTracing.com            offer_estimator.py
-  (upload CSV, get phones)        • MAO = ARV×70% − repairs
-       │                          • AI deal breakdown (Claude)
-       ▼                                │
-  blast.py                             ▼
-  • Twilio SMS blast          deal_intelligence.py  [coming]
-  • Personalized per lead      • Lead scoring (hot/warm/cold)
-  • TEST_MODE safety flag      • Urgency + equity analysis
-  • 2s delay between sends     • Skip trace queue output
+scrape_foreclosures.py          ┌─────────────────────┐
+  • Playwright browser           │  AI Acquisitions    │
+  • FRCL filing scrape           │  Assistant          │
+  • PDF download + OCR           │  lti_acquisitions   │
+  • Name + address extract       │  .html (React UI)   │
+  • CSV export                   │  acquisitions_api.py│
+       │                         │  • SQLite leads DB  │
+       ▼                         │  • Claude AI convo  │
+BatchSkipTracing.com             │  • Qual scoring     │
+  (upload CSV, get phones)       │  • Message queue    │
+       │                         └─────────────────────┘
+       ▼                                    │
+  blast.py                        responder.py (Flask)
+  • Twilio SMS blast               • Twilio SMS webhook
+  • Personalized per lead          • Claude classifies reply
+  • TEST_MODE safety flag          • Auto-responds to seller
+       │                           • Telegram alert if HOT
+       ▼
+deal_intelligence.py
+  • Rule-based lead scoring
+  • Hot / warm / cold / dead
+  • Skip trace queue output
+  • Batch CSV or single record
 ```
 
 ---
 
 ## Modules
 
+### `lti_acquisitions.html` + `acquisitions_api.py` — AI Acquisitions Assistant
+
+The core operator tool. A local web app where you manage seller leads, run AI-driven SMS qualification conversations, and track motivation scores and property data.
+
+**What it does:**
+- Add leads from any source (pre-foreclosure, absentee, inherited, tax-delinquent)
+- `start_ai=true` generates a natural opening SMS via Claude
+- Each seller reply is processed by Claude to extract qualification fields and update the motivation score
+- Generates the next question targeting uncaptured fields
+- Logs all outbound/inbound texts to a message queue for manual sending (Twilio integration pending)
+- Conversation, qualification fields, scores, and timeline persist in SQLite across restarts
+- Calculates MAO (`ARV × mult − repairs − fee`) and shows a property analysis tab
+
+**Qualification fields tracked:** interest, motivation, timeline, occupancy, condition, debt, asking price, callback availability
+
+**Scoring (100 pts max):**
+| Field | Max | Signal |
+|---|---|---|
+| Interest | 20 | Yes=20, Open=14, No=0 |
+| Motivation | 20 | Inherited/urgent=20, Repairs overwhelming=18, Casual=6 |
+| Timeline | 20 | ≤30 days=20, 2–3 months=10, Flexible=3 |
+| Distress | 15 | Vacant=15, Tenant=6, Owner-occ=2 |
+| Price | 15 | Flexible=15, Reasonable=8, Top dollar=2 |
+| Appointment | 10 | Agreed to call=10 |
+
+**Usage:**
+```powershell
+set ANTHROPIC_API_KEY=sk-ant-xxxx
+python acquisitions_api.py
+# Open http://127.0.0.1:5001/
+```
+
+---
+
 ### `scrape_foreclosures.py` — Lead Sourcing Engine
+
 Automates the Harris County Clerk foreclosure search (FRCL filings) using Playwright.
 
 **What it does:**
-- Navigates `cclerk.hctx.net` and paginate through all FRCL filings for a given month
+- Navigates `cclerk.hctx.net` and paginates through all FRCL filings for a given month
 - Downloads each PDF instrument and runs Tesseract OCR
 - Extracts grantor name (seller) and property address using pattern matching
 - Falls back to Harris County Real Property records and HCAD owner search when OCR misses
@@ -51,30 +92,29 @@ python scrape_foreclosures.py
 # Edit OUTPUT and ddlMonth at top of file before running
 ```
 
-**Dependencies:** `playwright`, `pdfplumber`, `pytesseract`, `Pillow`, `requests`
-
 ---
 
 ### `blast.py` — SMS Outreach Engine
+
 Sends personalized SMS messages to skip-traced leads via the Twilio REST API.
 
 **What it does:**
 - Reads a CSV with `phone` and `message` columns
 - Normalizes phone numbers to E.164 format
-- Sends via Twilio Messaging Service (no SDK — direct REST calls)
+- Sends via Twilio Messaging Service (direct REST, no SDK)
 - `TEST_MODE = True` by default — sends to your number only before going live
 
 **Usage:**
 ```bash
-# Test (sends 1 message to TEST_PHONE)
+# Test mode (1 message to TEST_PHONE)
 python blast.py
 
 # Live blast — flip TEST_MODE = False in the file
 python blast.py
 ```
 
-**Environment variables required:**
-```bash
+**Required env vars:**
+```powershell
 set TWILIO_ACCOUNT_SID=ACxxxx
 set TWILIO_AUTH_TOKEN=xxxx
 set TWILIO_MESSAGING_SID=MGxxxx
@@ -83,28 +123,23 @@ set TWILIO_MESSAGING_SID=MGxxxx
 ---
 
 ### `responder.py` — AI Auto-Response + Lead Alert
-Flask webhook that receives incoming seller SMS replies through Twilio and responds automatically using Claude.
+
+Flask webhook that receives incoming seller SMS replies via Twilio and responds automatically using Claude.
 
 **What it does:**
-- Classifies each seller reply as `INTERESTED` / `NOT_INTERESTED` / `NEEDS_FOLLOWUP` in a single Claude call
+- Classifies each reply as one of 5 labels: `INTERESTED` / `CALLBACK_REQUESTED` / `NEEDS_FOLLOWUP` / `NOT_INTERESTED` / `OPT_OUT`
 - Generates a context-appropriate SMS reply (under 160 chars)
-- On `INTERESTED`: fires a Telegram notification with seller name, phone, property address, and the `offer_estimator.py` command to run next
+- On `INTERESTED`: fires a Telegram notification with seller name, phone, and property address
 - Looks up lead details from the outreach CSV by phone number
 
 **Usage:**
 ```bash
-# 1. Set environment variables
 set ANTHROPIC_API_KEY=sk-ant-xxxx
-set TELEGRAM_TOKEN=xxxx         # from @BotFather
-set TELEGRAM_CHAT_ID=xxxx       # from getUpdates API
-
-# 2. Start the server
-python responder.py
-
-# 3. Expose publicly
-ngrok http 5000
-
-# 4. Set Twilio webhook → https://your-ngrok-url.ngrok.io/sms
+set TELEGRAM_TOKEN=xxxx
+set TELEGRAM_CHAT_ID=xxxx
+python responder.py          # runs on port 5000
+ngrok http 5000              # expose publicly
+# Set Twilio webhook → https://your-ngrok-url/sms
 ```
 
 **Telegram bot setup (one-time):**
@@ -114,7 +149,23 @@ ngrok http 5000
 
 ---
 
+### `deal_intelligence.py` — Rule-Based Lead Scorer
+
+Offline batch scoring tool. No API calls. Runs against a CSV and outputs scored leads with recommended actions, MAO estimates, and a skip-trace queue.
+
+**Usage:**
+```bash
+# Score a full CSV
+python deal_intelligence.py --input foreclosures_may2026.csv
+
+# Score a single record
+python deal_intelligence.py --single "3927 Cypress Hill Dr" --arv 185000 --repairs 25000
+```
+
+---
+
 ### `offer_estimator.py` — MAO Calculator + AI Deal Breakdown
+
 CLI tool that calculates Maximum Allowable Offer and generates a plain-English deal analysis using Claude.
 
 **The math:**
@@ -126,40 +177,11 @@ Assignment Fee Room = ~$10,000
 
 **Usage:**
 ```bash
-# With known ARV (fastest)
-python offer_estimator.py "3927 CYPRESS HILL DR HOUSTON TX 77084" --arv 185000 --repairs 25000
-
-# With optional property details
-python offer_estimator.py "ADDRESS" --arv 185000 --repairs 25000 --sqft 1450 --year 1968
-
-# Interactive prompt (looks up HCAD value manually)
-python offer_estimator.py "ADDRESS"
+python offer_estimator.py "3927 CYPRESS HILL DR" --arv 185000 --repairs 25000
 ```
 
-**Sample output:**
-```
-Property : 3927 CYPRESS HILL DR HOUSTON TX 77084
-------------------------------------------------------------
-  HCAD Value    : $185,000
-  Est. Repairs  : $25,000
-  ARV x 70%     : $129,500
-  MAO           : $104,500
-
-  >> Offer Range: $89,500 - $94,500
-  Assignment $  : ~$10,000
-
-------------------------------------------------------------
-AI BREAKDOWN
-------------------------------------------------------------
-This 1978 property in SW Houston is appraised at $185k — solid
-ARV for the submarket. At $25k in repairs, your MAO of $104,500
-leaves $10k assignment room and a 30% spread for your end buyer.
-Main risk is deferred maintenance on a pre-1980 structure; budget
-a contingency for cast iron pipes and HVAC.
-```
-
-**Environment variables required:**
-```bash
+**Required env vars:**
+```powershell
 set ANTHROPIC_API_KEY=sk-ant-xxxx
 ```
 
@@ -171,38 +193,40 @@ set ANTHROPIC_API_KEY=sk-ant-xxxx
 ```bash
 git clone https://github.com/tirv504/ai_realestate.git
 cd ai_realestate
-pip install playwright pdfplumber pytesseract Pillow requests flask anthropic openpyxl
+pip install -r requirements.txt
+pip install playwright pdfplumber pytesseract Pillow openpyxl
 playwright install chromium
 ```
 
 ### 2. System dependency
-- **Tesseract OCR** — required for PDF text extraction
-  - Windows: download installer from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
+- **Tesseract OCR** — required by `scrape_foreclosures.py` only
+  - Windows: [UB Mannheim installer](https://github.com/UB-Mannheim/tesseract/wiki)
   - Add to PATH: `C:\Program Files\Tesseract-OCR`
 
 ### 3. Environment variables
-```bash
-# Anthropic (Claude AI)
+```powershell
+# Required for acquisitions_api.py, responder.py, offer_estimator.py
 set ANTHROPIC_API_KEY=sk-ant-xxxx
 
-# Twilio (SMS)
+# Required for blast.py and responder.py
 set TWILIO_ACCOUNT_SID=ACxxxx
 set TWILIO_AUTH_TOKEN=xxxx
 set TWILIO_MESSAGING_SID=MGxxxx
 
-# Telegram (lead alerts)
+# Required for responder.py Telegram alerts
 set TELEGRAM_TOKEN=xxxx
 set TELEGRAM_CHAT_ID=xxxx
 ```
 
-### 4. Run order
+### 4. Typical workflow
 ```
 1. scrape_foreclosures.py   → foreclosures_[month][year].csv
-2. Upload to BatchSkipTracing.com
-3. Download results → outreach_ready.csv  (add 'message' column)
-4. blast.py                 → SMS blast to leads
-5. responder.py             → auto-handle replies + Telegram alerts
-6. offer_estimator.py       → run on hot leads after HCAD lookup
+2. Upload to BatchSkipTracing.com → download with phones
+3. deal_intelligence.py     → score and rank leads
+4. blast.py                 → SMS blast to priority leads
+5. responder.py             → auto-handle inbound replies
+6. acquisitions_api.py      → manage hot leads through full AI qualification
+7. offer_estimator.py       → run MAO on leads ready for an offer
 ```
 
 ---
@@ -211,23 +235,15 @@ set TELEGRAM_CHAT_ID=xxxx
 
 | Layer | Technology |
 |---|---|
+| AI qualification & generation | Anthropic Claude (`claude-sonnet-4-6`) |
+| Acquisitions UI | React 18 (CDN/Babel, no build step) |
+| Acquisitions backend | Flask + SQLite (WAL mode) |
+| SMS delivery | Twilio REST API |
+| Lead alert notifications | Telegram Bot API |
 | Browser automation | Playwright (Chromium) |
 | PDF processing | pdfplumber + Tesseract OCR |
-| AI classification & generation | Anthropic Claude (`claude-sonnet-4-6`) |
-| SMS delivery | Twilio REST API (no SDK) |
-| Lead alert notifications | Telegram Bot API |
-| Web server (webhook) | Flask |
+| Inbound SMS webhook | Flask (port 5000) |
 | Data processing | Python csv / openpyxl |
-
----
-
-## Market Focus
-
-This pipeline targets **Harris County, Texas** pre-foreclosure filings (FRCL instrument type). The scraper is calibrated for the Harris County Clerk's ASP.NET UpdatePanel interface. Foreclosure auctions in Harris County occur on the **first Tuesday of each month** at the courthouse steps.
-
-**Priority zip codes** (inner loop, high appreciation):
-- 77003, 77011, 77023 — East End / Third Ward
-- Houston MSA foreclosure volume averages ~600–900 FRCL filings per month
 
 ---
 
@@ -237,10 +253,13 @@ This pipeline targets **Harris County, Texas** pre-foreclosure filings (FRCL ins
 - [x] OCR pipeline with HCAD + RP fallback
 - [x] BatchSkipTracing CSV formatter
 - [x] Twilio SMS blast engine
-- [x] Claude AI auto-responder (Flask webhook)
+- [x] Claude AI auto-responder with 5-label classifier (Flask webhook)
 - [x] MAO calculator with AI deal breakdown
-- [ ] `deal_intelligence.py` — rule-based lead scoring (hot/warm/cold/dead)
-- [ ] Web dashboard — scored leads ranked by urgency
+- [x] Rule-based lead scoring (`deal_intelligence.py`)
+- [x] AI Acquisitions Assistant — full qualification conversation loop, scoring, message queue
+- [ ] Connect inbound Twilio SMS to acquisitions DB (responder.py → acquisitions_api.py)
+- [ ] CSV bulk import into acquisitions leads DB
+- [ ] Live Twilio send from message queue (swap `queue_msg()` for Twilio REST call)
 - [ ] Multi-county support (Fort Bend, Montgomery, Brazoria)
 - [ ] Comparable sales integration for ARV automation
 
@@ -252,4 +271,4 @@ This tool accesses publicly available government records (Harris County Clerk, H
 
 ---
 
-*Built for the Houston wholesale market. First auction: June 3, 2026.*
+*Built for the Houston wholesale market.*
